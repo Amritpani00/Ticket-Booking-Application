@@ -1,0 +1,26 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/ticketdb?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:password}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
+app:
+  payment:
+    razorpay:
+      key-id: ${RAZORPAY_KEY_ID:rzp_test_xxxxxxxxxxxxx}
+      key-secret: ${RAZORPAY_KEY_SECRET:secret}
+      currency: INR
+      enabled: ${RAZORPAY_ENABLED:false}
