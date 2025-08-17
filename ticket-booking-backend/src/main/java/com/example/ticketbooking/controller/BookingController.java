@@ -14,16 +14,19 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*")
 public class BookingController {
 
-    private final BookingService bookingService;
+	private final BookingService bookingService;
 
-    @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody BookingDtos.CreateBookingRequest request) throws Exception {
-        return ResponseEntity.ok(bookingService.createBooking(request));
-    }
+	@PostMapping
+	public ResponseEntity<?> create(@Valid @RequestBody BookingDtos.CreateBookingRequest request) throws Exception {
+		return ResponseEntity.ok(bookingService.createBooking(request));
+	}
 
-    @PostMapping("/verify")
-    public ResponseEntity<?> verify(@Valid @RequestBody BookingDtos.VerifyPaymentRequest request) throws Exception {
-        Booking booking = bookingService.confirmPayment(request);
-        return ResponseEntity.ok(booking);
-    }
+	@PostMapping("/verify")
+	public ResponseEntity<?> verify(@Valid @RequestBody BookingDtos.VerifyPaymentRequest request) throws Exception {
+		Booking booking = bookingService.confirmPayment(request);
+		return ResponseEntity.ok(BookingDtos.BookingStatusResponse.builder()
+				.bookingId(booking.getId())
+				.status(booking.getStatus().name())
+				.build());
+	}
 }

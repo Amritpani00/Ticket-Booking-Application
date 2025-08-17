@@ -47,4 +47,12 @@ public class BookingDtos {
         @NotBlank
         private String razorpaySignature;
     }
+
+    @Getter
+    @Setter
+    @Builder
+    public static class BookingStatusResponse {
+        private Long bookingId;
+        private String status;
+    }
 }

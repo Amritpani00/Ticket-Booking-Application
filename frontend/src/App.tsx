@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import './App.css';
-import { apiGet, apiPost, API_BASE } from './api';
+import { apiGet, apiPost } from './api';
+import { setToken, getToken } from './auth';
 
 interface EventDto {
 	id: number;
@@ -39,6 +40,8 @@ function App() {
 	const [selectedSeatIds, setSelectedSeatIds] = useState<number[]>([]);
 	const [customer, setCustomer] = useState({ name: '', email: '', phone: '' });
 	const [creating, setCreating] = useState(false);
+	const [auth, setAuth] = useState({ email: '', password: '', name: '' });
+	const [token, setTok] = useState<string | null>(() => getToken());
 
 	useEffect(() => {
 		apiGet<EventDto[]>(`/api/events?q=${encodeURIComponent(query)}`).then(setEvents);
@@ -60,8 +63,24 @@ function App() {
 		);
 	}
 
+	async function register() {
+		const resp = await apiPost('/api/auth/register', { name: auth.name, email: auth.email, password: auth.password });
+		setToken((resp as any).token);
+		setTok((resp as any).token);
+	}
+
+	async function login() {
+		const resp = await apiPost('/api/auth/login', { email: auth.email, password: auth.password });
+		setToken((resp as any).token);
+		setTok((resp as any).token);
+	}
+
 	async function createBooking() {
 		if (!selectedEvent || selectedSeatIds.length === 0) return;
+		if (!token) {
+			alert('Please login or register first');
+			return;
+		}
 		setCreating(true);
 		try {
 			const resp = await apiPost<any, CreateBookingResponse>(
@@ -117,6 +136,21 @@ function App() {
 	return (
 		<div className="container">
 			<h1>Ticket Booking</h1>
+			<div className="auth">
+				{token ? (
+					<div>Logged in</div>
+				) : (
+					<div className="auth-grid">
+						<input placeholder="Name" value={auth.name} onChange={(e) => setAuth({ ...auth, name: e.target.value })} />
+						<input placeholder="Email" value={auth.email} onChange={(e) => setAuth({ ...auth, email: e.target.value })} />
+						<input placeholder="Password" type="password" value={auth.password} onChange={(e) => setAuth({ ...auth, password: e.target.value })} />
+						<div className="auth-actions">
+							<button onClick={register}>Register</button>
+							<button onClick={login}>Login</button>
+						</div>
+					</div>
+				)}
+			</div>
 			<div className="search">
 				<input
 					placeholder="Search events by name or venue"

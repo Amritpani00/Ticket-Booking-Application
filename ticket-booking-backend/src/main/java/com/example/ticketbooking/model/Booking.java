@@ -2,6 +2,7 @@ package com.example.ticketbooking.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -28,6 +29,7 @@ public class Booking {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "event_id")
+    @JsonIgnore
     private Event event;
 
     @ManyToMany
@@ -37,6 +39,7 @@ public class Booking {
         inverseJoinColumns = @JoinColumn(name = "seat_id")
     )
     @Builder.Default
+    @JsonIgnore
     private Set<Seat> seats = new HashSet<>();
 
     @Column(nullable = false)
