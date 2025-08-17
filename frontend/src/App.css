@@ -54,3 +54,6 @@
 .booking-form input { padding: 8px; border: 1px solid #ddd; }
 .booking-form button { padding: 10px; background: #16a34a; color: white; border: none; border-radius: 6px; cursor: pointer; }
 .booking-form button:disabled { background: #a7f3d0; cursor: not-allowed; }
+.auth { margin-bottom: 12px; }
+.auth-grid { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 8px; align-items: center; }
+.auth-actions button { margin-right: 6px; padding: 8px 10px; }

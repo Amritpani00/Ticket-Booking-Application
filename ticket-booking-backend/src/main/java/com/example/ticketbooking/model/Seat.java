@@ -2,6 +2,7 @@ package com.example.ticketbooking.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "seats", indexes = {
@@ -23,6 +24,7 @@ public class Seat {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "event_id")
+    @JsonIgnore
     private Event event;
 
     @Column(nullable = false)
