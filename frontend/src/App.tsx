@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import './App.css';
+import { Link, useNavigate } from 'react-router-dom';
 import { apiGet, apiPost } from './api';
 import { setToken, getToken, clearToken } from './auth';
 
@@ -46,6 +47,7 @@ function App() {
 	const [creating, setCreating] = useState(false);
 	const [auth, setAuth] = useState({ email: '', password: '', name: '' });
 	const [token, setTok] = useState<string | null>(() => getToken());
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		let active = true;
@@ -165,25 +167,23 @@ function App() {
 
 	return (
 		<div className="container">
-			<h1>Ticket Booking</h1>
-			<div className="auth">
-				{token ? (
-					<div className="auth-loggedin">
-						<span>Logged in</span>
-						<button className="link" onClick={() => { clearToken(); setTok(null); }}>Logout</button>
-					</div>
-				) : (
-					<div className="auth-grid">
-						<input placeholder="Name" value={auth.name} onChange={(e) => setAuth({ ...auth, name: e.target.value })} />
-						<input placeholder="Email" value={auth.email} onChange={(e) => setAuth({ ...auth, email: e.target.value })} />
-						<input placeholder="Password" type="password" value={auth.password} onChange={(e) => setAuth({ ...auth, password: e.target.value })} />
-						<div className="auth-actions">
-							<button onClick={register}>Register</button>
-							<button onClick={login}>Login</button>
-						</div>
-					</div>
-				)}
-			</div>
+			<nav className="navbar">
+				<Link to="/" className="brand">Ticket Booking</Link>
+				<div className="nav-actions">
+					{token ? (
+						<>
+							<button className="link" onClick={() => navigate('/dashboard')}>Dashboard</button>
+							<button className="link" onClick={() => { clearToken(); setTok(null); }}>Logout</button>
+						</>
+					) : (
+						<>
+							<Link className="link" to="/login">Login</Link>
+							<Link className="link" to="/register">Register</Link>
+						</>
+					)}
+				</div>
+			</nav>
+			<h1>Find Events</h1>
 			<div className="search">
 				<input
 					placeholder="Search events by name or venue"

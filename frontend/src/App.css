@@ -42,6 +42,9 @@
 }
 
 .container { max-width: 960px; margin: 0 auto; padding: 16px; }
+.navbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.navbar .brand { font-weight: 700; color: inherit; }
+.navbar .nav-actions { display: flex; gap: 10px; }
 .search input { width: 100%; padding: 8px; margin-bottom: 12px; }
 .events { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .events button { padding: 6px 10px; border: 1px solid #ccc; background: #fff; cursor: pointer; border-radius: 6px; }
@@ -58,6 +61,6 @@
 .auth-grid { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 8px; align-items: center; }
 .auth-actions button { margin-right: 6px; padding: 8px 10px; }
 .auth-loggedin { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
-.auth-loggedin .link { background: transparent; color: #0ea5e9; border: none; cursor: pointer; text-decoration: underline; padding: 0; }
+.auth-loggedin .link, .navbar .link { background: transparent; color: #0ea5e9; border: none; cursor: pointer; text-decoration: underline; padding: 0; }
 .loading { margin: 8px 0; color: #6b7280; }
 .error { margin: 8px 0; color: #b91c1c; }
