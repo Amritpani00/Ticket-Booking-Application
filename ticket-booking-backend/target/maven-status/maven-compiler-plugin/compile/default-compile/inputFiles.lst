@@ -5,6 +5,7 @@
 /workspace/ticket-booking-backend/src/main/java/com/example/ticketbooking/controller/EventController.java
 /workspace/ticket-booking-backend/src/main/java/com/example/ticketbooking/dto/AuthDtos.java
 /workspace/ticket-booking-backend/src/main/java/com/example/ticketbooking/dto/BookingDtos.java
+/workspace/ticket-booking-backend/src/main/java/com/example/ticketbooking/dto/EventDtos.java
 /workspace/ticket-booking-backend/src/main/java/com/example/ticketbooking/model/AppUser.java
 /workspace/ticket-booking-backend/src/main/java/com/example/ticketbooking/model/Booking.java
 /workspace/ticket-booking-backend/src/main/java/com/example/ticketbooking/model/Event.java
