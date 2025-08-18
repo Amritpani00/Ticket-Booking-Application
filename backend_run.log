@@ -8,30 +8,30 @@
 
  :: Spring Boot ::                (v3.3.4)
 
-2025-08-18T05:41:03.843Z  INFO 9232 --- [           main] c.e.t.TicketBookingBackendApplication    : Starting TicketBookingBackendApplication using Java 21.0.7 with PID 9232 (/workspace/ticket-booking-backend/target/classes started by ubuntu in /workspace/ticket-booking-backend)
-2025-08-18T05:41:03.845Z  INFO 9232 --- [           main] c.e.t.TicketBookingBackendApplication    : The following 1 profile is active: "dev"
-2025-08-18T05:41:04.209Z  INFO 9232 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-08-18T05:41:04.242Z  INFO 9232 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 28 ms. Found 4 JPA repository interfaces.
-2025-08-18T05:41:04.532Z  INFO 9232 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
-2025-08-18T05:41:04.539Z  INFO 9232 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2025-08-18T05:41:04.539Z  INFO 9232 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
-2025-08-18T05:41:04.566Z  INFO 9232 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2025-08-18T05:41:04.567Z  INFO 9232 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 694 ms
-2025-08-18T05:41:04.672Z  INFO 9232 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-08-18T05:41:04.696Z  INFO 9232 --- [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
-2025-08-18T05:41:04.711Z  INFO 9232 --- [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
-2025-08-18T05:41:04.869Z  INFO 9232 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-08-18T05:41:04.883Z  INFO 9232 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2025-08-18T05:41:04.989Z  INFO 9232 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:devdb user=SA
-2025-08-18T05:41:04.990Z  INFO 9232 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2025-08-18T05:41:05.004Z  WARN 9232 --- [           main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2025-08-18T05:41:05.504Z  INFO 9232 --- [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2025-08-18T05:41:05.549Z  INFO 9232 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-08-18T05:41:05.681Z  INFO 9232 --- [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
-2025-08-18T05:41:06.020Z  INFO 9232 --- [           main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
-2025-08-18T05:41:06.020Z  WARN 9232 --- [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used for username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider.
-2025-08-18T05:41:06.381Z  INFO 9232 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
-2025-08-18T05:41:06.387Z  INFO 9232 --- [           main] c.e.t.TicketBookingBackendApplication    : Started TicketBookingBackendApplication in 2.752 seconds (process running for 2.92)
-2025-08-18T05:41:17.208Z  INFO 9232 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
-2025-08-18T05:41:17.208Z  INFO 9232 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
-2025-08-18T05:41:17.209Z  INFO 9232 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-08-18T12:10:19.408Z  INFO 7669 --- [           main] c.e.t.TicketBookingBackendApplication    : Starting TicketBookingBackendApplication v0.0.1-SNAPSHOT using Java 21.0.7 with PID 7669 (/workspace/ticket-booking-backend/target/ticket-booking-backend-0.0.1-SNAPSHOT.jar started by ubuntu in /workspace/ticket-booking-backend)
+2025-08-18T12:10:19.410Z  INFO 7669 --- [           main] c.e.t.TicketBookingBackendApplication    : The following 1 profile is active: "dev"
+2025-08-18T12:10:20.035Z  INFO 7669 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-18T12:10:20.081Z  INFO 7669 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 40 ms. Found 4 JPA repository interfaces.
+2025-08-18T12:10:20.426Z  INFO 7669 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-08-18T12:10:20.435Z  INFO 7669 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-08-18T12:10:20.435Z  INFO 7669 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2025-08-18T12:10:20.454Z  INFO 7669 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-08-18T12:10:20.454Z  INFO 7669 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1008 ms
+2025-08-18T12:10:20.570Z  INFO 7669 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-08-18T12:10:20.607Z  INFO 7669 --- [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2025-08-18T12:10:20.628Z  INFO 7669 --- [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-08-18T12:10:20.854Z  INFO 7669 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-08-18T12:10:20.872Z  INFO 7669 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-08-18T12:10:21.018Z  INFO 7669 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:devdb user=SA
+2025-08-18T12:10:21.019Z  INFO 7669 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-08-18T12:10:21.038Z  WARN 7669 --- [           main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-08-18T12:10:21.723Z  INFO 7669 --- [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-08-18T12:10:21.787Z  INFO 7669 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-08-18T12:10:21.955Z  INFO 7669 --- [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-08-18T12:10:22.387Z  INFO 7669 --- [           main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2025-08-18T12:10:22.388Z  WARN 7669 --- [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used for username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider.
+2025-08-18T12:10:22.691Z  INFO 7669 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-08-18T12:10:22.700Z  INFO 7669 --- [           main] c.e.t.TicketBookingBackendApplication    : Started TicketBookingBackendApplication in 3.6 seconds (process running for 3.988)
+2025-08-18T12:11:03.064Z  INFO 7669 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-08-18T12:11:03.064Z  INFO 7669 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-08-18T12:11:03.065Z  INFO 7669 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms

@@ -1,8 +1,9 @@
-export const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8080';
+export const API_BASE = (import.meta as any).env?.VITE_API_BASE || '';
 import { authHeaders } from './auth';
 
 export async function apiGet<T>(path: string): Promise<T> {
-	const res = await fetch(`${API_BASE}${path}`, { headers: { ...authHeaders() } });
+	const url = `${API_BASE}${path}` || path;
+	const res = await fetch(url, { headers: { ...authHeaders() } });
 	if (!res.ok) {
 		const text = await res.text().catch(() => '');
 		throw new Error(`GET ${path} failed: ${res.status} ${text}`);
@@ -11,7 +12,8 @@ export async function apiGet<T>(path: string): Promise<T> {
 }
 
 export async function apiPost<TReq, TRes>(path: string, body: TReq): Promise<TRes> {
-	const res = await fetch(`${API_BASE}${path}`, {
+	const url = `${API_BASE}${path}` || path;
+	const res = await fetch(url, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json', ...authHeaders() },
 		body: JSON.stringify(body)
