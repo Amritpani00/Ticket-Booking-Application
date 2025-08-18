@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import './App.css';
 import { apiGet, apiPost } from './api';
-import { setToken, getToken } from './auth';
+import { setToken, getToken, clearToken } from './auth';
 
 interface EventDto {
 	id: number;
@@ -35,8 +35,12 @@ function formatSeat(seat: SeatDto) {
 function App() {
 	const [query, setQuery] = useState('');
 	const [events, setEvents] = useState<EventDto[]>([]);
+	const [loadingEvents, setLoadingEvents] = useState(false);
+	const [eventsError, setEventsError] = useState<string | null>(null);
 	const [selectedEvent, setSelectedEvent] = useState<EventDto | null>(null);
 	const [seats, setSeats] = useState<SeatDto[]>([]);
+	const [loadingSeats, setLoadingSeats] = useState(false);
+	const [seatsError, setSeatsError] = useState<string | null>(null);
 	const [selectedSeatIds, setSelectedSeatIds] = useState<number[]>([]);
 	const [customer, setCustomer] = useState({ name: '', email: '', phone: '' });
 	const [creating, setCreating] = useState(false);
@@ -44,12 +48,28 @@ function App() {
 	const [token, setTok] = useState<string | null>(() => getToken());
 
 	useEffect(() => {
-		apiGet<EventDto[]>(`/api/events?q=${encodeURIComponent(query)}`).then(setEvents);
+		let active = true;
+		setLoadingEvents(true);
+		setEventsError(null);
+		const id = setTimeout(() => {
+			apiGet<EventDto[]>(`/api/events?q=${encodeURIComponent(query)}`)
+				.then((data) => { if (active) setEvents(data); })
+				.catch((err) => { if (active) setEventsError(err.message || 'Failed to load events'); })
+				.finally(() => { if (active) setLoadingEvents(false); });
+		}, 300);
+		return () => { active = false; clearTimeout(id); };
 	}, [query]);
 
 	useEffect(() => {
 		if (!selectedEvent) return;
-		apiGet<SeatDto[]>(`/api/events/${selectedEvent.id}/seats`).then(setSeats);
+		let active = true;
+		setLoadingSeats(true);
+		setSeatsError(null);
+		apiGet<SeatDto[]>(`/api/events/${selectedEvent.id}/seats`)
+			.then((data) => { if (active) setSeats(data); })
+			.catch((err) => { if (active) setSeatsError(err.message || 'Failed to load seats'); })
+			.finally(() => { if (active) setLoadingSeats(false); });
+		return () => { active = false; };
 	}, [selectedEvent?.id]);
 
 	const total = useMemo(() => {
@@ -64,15 +84,23 @@ function App() {
 	}
 
 	async function register() {
-		const resp = await apiPost('/api/auth/register', { name: auth.name, email: auth.email, password: auth.password });
-		setToken((resp as any).token);
-		setTok((resp as any).token);
+		try {
+			const resp = await apiPost('/api/auth/register', { name: auth.name, email: auth.email, password: auth.password });
+			setToken((resp as any).token);
+			setTok((resp as any).token);
+		} catch (e: any) {
+			alert(e.message || 'Registration failed');
+		}
 	}
 
 	async function login() {
-		const resp = await apiPost('/api/auth/login', { email: auth.email, password: auth.password });
-		setToken((resp as any).token);
-		setTok((resp as any).token);
+		try {
+			const resp = await apiPost('/api/auth/login', { email: auth.email, password: auth.password });
+			setToken((resp as any).token);
+			setTok((resp as any).token);
+		} catch (e: any) {
+			alert(e.message || 'Login failed');
+		}
 	}
 
 	async function createBooking() {
@@ -95,6 +123,8 @@ function App() {
 			);
 
 			await launchRazorpay(resp);
+		} catch (e: any) {
+			alert(e.message || 'Failed to create booking');
 		} finally {
 			setCreating(false);
 		}
@@ -138,7 +168,10 @@ function App() {
 			<h1>Ticket Booking</h1>
 			<div className="auth">
 				{token ? (
-					<div>Logged in</div>
+					<div className="auth-loggedin">
+						<span>Logged in</span>
+						<button className="link" onClick={() => { clearToken(); setTok(null); }}>Logout</button>
+					</div>
 				) : (
 					<div className="auth-grid">
 						<input placeholder="Name" value={auth.name} onChange={(e) => setAuth({ ...auth, name: e.target.value })} />
@@ -158,6 +191,8 @@ function App() {
 					onChange={(e) => setQuery(e.target.value)}
 				/>
 			</div>
+			{loadingEvents && <div className="loading">Loading events…</div>}
+			{eventsError && <div className="error">{eventsError}</div>}
 			<div className="events">
 				{events.map((ev) => (
 					<button
@@ -178,6 +213,8 @@ function App() {
 						Price: ₹{selectedEvent.seatPrice.toFixed(2)} | Selected: {selectedSeatIds.length} |
 						Total: ₹{total.toFixed(2)}
 					</p>
+					{loadingSeats && <div className="loading">Loading seats…</div>}
+					{seatsError && <div className="error">{seatsError}</div>}
 					<div className="seat-grid">
 						{seats.map((s) => {
 							const disabled = s.status !== 'AVAILABLE';

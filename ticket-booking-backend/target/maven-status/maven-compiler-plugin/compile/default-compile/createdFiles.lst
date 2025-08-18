@@ -10,6 +10,7 @@ com/example/ticketbooking/dto/AuthDtos$RegisterRequest.class
 com/example/ticketbooking/dto/AuthDtos$LoginRequest.class
 com/example/ticketbooking/model/Seat.class
 com/example/ticketbooking/model/Event$EventBuilder.class
+com/example/ticketbooking/dto/EventDtos$EventResponse.class
 com/example/ticketbooking/service/BookingService.class
 com/example/ticketbooking/service/CustomUserDetailsService.class
 com/example/ticketbooking/dto/BookingDtos$CreateBookingRequest.class
@@ -20,6 +21,7 @@ com/example/ticketbooking/model/Booking.class
 com/example/ticketbooking/model/Event.class
 com/example/ticketbooking/repository/EventRepository.class
 com/example/ticketbooking/controller/BookingController.class
+com/example/ticketbooking/dto/EventDtos$EventResponse$EventResponseBuilder.class
 com/example/ticketbooking/security/JwtService.class
 com/example/ticketbooking/model/Seat$SeatBuilder.class
 com/example/ticketbooking/dto/AuthDtos$AuthResponse.class
@@ -35,3 +37,4 @@ com/example/ticketbooking/model/AppUser.class
 com/example/ticketbooking/repository/SeatRepository.class
 com/example/ticketbooking/dto/BookingDtos$CreateBookingResponse$CreateBookingResponseBuilder.class
 com/example/ticketbooking/dto/AuthDtos.class
+com/example/ticketbooking/dto/EventDtos.class
