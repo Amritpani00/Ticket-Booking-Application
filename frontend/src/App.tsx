@@ -47,6 +47,7 @@ function App() {
 	const [creating, setCreating] = useState(false);
 	const [auth, setAuth] = useState({ email: '', password: '', name: '' });
 	const [token, setTok] = useState<string | null>(() => getToken());
+	const [toast, setToast] = useState<string | null>(null);
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -166,23 +167,7 @@ function App() {
 	}
 
 	return (
-		<div className="container">
-			<nav className="navbar">
-				<Link to="/" className="brand">Ticket Booking</Link>
-				<div className="nav-actions">
-					{token ? (
-						<>
-							<button className="link" onClick={() => navigate('/dashboard')}>Dashboard</button>
-							<button className="link" onClick={() => { clearToken(); setTok(null); }}>Logout</button>
-						</>
-					) : (
-						<>
-							<Link className="link" to="/login">Login</Link>
-							<Link className="link" to="/register">Register</Link>
-						</>
-					)}
-				</div>
-			</nav>
+		<div>
 			<h1>Find Events</h1>
 			<div className="search">
 				<input
@@ -191,7 +176,13 @@ function App() {
 					onChange={(e) => setQuery(e.target.value)}
 				/>
 			</div>
-			{loadingEvents && <div className="loading">Loading events…</div>}
+			{loadingEvents && (
+				<div style={{ display: 'grid', gap: 8, marginBottom: 12 }}>
+					<div className="skeleton" style={{ height: 36 }} />
+					<div className="skeleton" style={{ height: 36, width: '80%' }} />
+					<div className="skeleton" style={{ height: 36, width: '60%' }} />
+				</div>
+			)}
 			{eventsError && <div className="error">{eventsError}</div>}
 			<div className="events">
 				{events.map((ev) => (
@@ -213,7 +204,13 @@ function App() {
 						Price: ₹{selectedEvent.seatPrice.toFixed(2)} | Selected: {selectedSeatIds.length} |
 						Total: ₹{total.toFixed(2)}
 					</p>
-					{loadingSeats && <div className="loading">Loading seats…</div>}
+					{loadingSeats && (
+						<div style={{ display: 'grid', gap: 6, gridTemplateColumns: 'repeat(auto-fill, minmax(56px, 1fr))' }}>
+							{Array.from({ length: 24 }).map((_, i) => (
+								<div key={i} className="skeleton" style={{ height: 40 }} />
+							))}
+						</div>
+					)}
 					{seatsError && <div className="error">{seatsError}</div>}
 					<div className="seat-grid">
 						{seats.map((s) => {
@@ -236,12 +233,13 @@ function App() {
 						<input placeholder="Name" value={customer.name} onChange={(e) => setCustomer({ ...customer, name: e.target.value })} />
 						<input placeholder="Email" value={customer.email} onChange={(e) => setCustomer({ ...customer, email: e.target.value })} />
 						<input placeholder="Phone" value={customer.phone} onChange={(e) => setCustomer({ ...customer, phone: e.target.value })} />
-						<button disabled={creating || selectedSeatIds.length === 0} onClick={createBooking}>
+						<button disabled={creating || selectedSeatIds.length === 0} onClick={createBooking} onMouseEnter={() => setToast(selectedSeatIds.length === 0 ? 'Select at least one seat' : null)} onMouseLeave={() => setToast(null)}>
 							{creating ? 'Creating…' : 'Pay with Razorpay'}
 						</button>
 					</div>
 				</div>
 			)}
+			{toast && <div className="toast">{toast}</div>}
 		</div>
 	);
 }

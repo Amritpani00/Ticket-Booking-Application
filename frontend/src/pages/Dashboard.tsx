@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getToken, clearToken } from '../auth';
+import { getToken } from '../auth';
 import { apiGet } from '../api';
 
 interface EventItem { id: number; name: string; venue: string; seatPrice: number; }
@@ -26,14 +26,7 @@ export default function Dashboard() {
   }, [token]);
 
   return (
-    <div className="container">
-      <nav className="navbar">
-        <Link to="/" className="brand">Ticket Booking</Link>
-        <div className="nav-actions">
-          <button className="link" onClick={() => navigate('/')}>Home</button>
-          <button className="link" onClick={() => { clearToken(); setTokenState(null); navigate('/'); }}>Logout</button>
-        </div>
-      </nav>
+    <div>
       <h1>Dashboard</h1>
       <p>Welcome! Browse events or continue booking.</p>
       {loading && <div className="loading">Loading…</div>}
