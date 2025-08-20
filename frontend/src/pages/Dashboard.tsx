@@ -27,13 +27,15 @@ export default function Dashboard() {
 
   return (
     <div>
-      <h1>Dashboard</h1>
-      <p>Welcome! Browse events or continue booking.</p>
+      <div className="card" style={{ marginBottom: 12 }}>
+        <h1>Dashboard</h1>
+        <p>Welcome! Browse trains or continue booking.</p>
+      </div>
       {loading && <div className="loading">Loading…</div>}
       {error && <div className="error">{error}</div>}
       <div className="events">
         {events.map(ev => (
-          <Link key={ev.id} to={`/`} className="link">{ev.name} — {ev.venue} (₹{ev.seatPrice.toFixed(2)})</Link>
+          <Link key={ev.id} to={`/`} className="card" style={{ textDecoration: 'none' }}>{ev.name} — {ev.venue} (₹{ev.seatPrice.toFixed(2)})</Link>
         ))}
       </div>
     </div>

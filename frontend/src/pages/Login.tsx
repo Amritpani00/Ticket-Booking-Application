@@ -27,6 +27,7 @@ export default function Login() {
 
   return (
     <div className="container" style={{ maxWidth: 440 }}>
+      <div className="card">
       <h1>Login</h1>
       <form onSubmit={onSubmit} className="booking-form">
         <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -35,6 +36,7 @@ export default function Login() {
         <button disabled={loading} type="submit">{loading ? 'Logging in…' : 'Login'}</button>
       </form>
       <p style={{ marginTop: 12 }}>No account? <Link to="/register">Register</Link></p>
+      </div>
     </div>
   );
 }

@@ -28,6 +28,7 @@ export default function Register() {
 
   return (
     <div className="container" style={{ maxWidth: 440 }}>
+      <div className="card">
       <h1>Register</h1>
       <form onSubmit={onSubmit} className="booking-form">
         <input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
@@ -37,6 +38,7 @@ export default function Register() {
         <button disabled={loading} type="submit">{loading ? 'Registering…' : 'Create account'}</button>
       </form>
       <p style={{ marginTop: 12 }}>Already have an account? <Link to="/login">Login</Link></p>
+      </div>
     </div>
   );
 }
