@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { apiPost } from '../api';
 import { setToken } from '../auth';
+import { Alert, Box, Button, Link, Stack, TextField, Typography, Paper } from '@mui/material';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -26,18 +27,20 @@ export default function Login() {
   }
 
   return (
-    <div className="container" style={{ maxWidth: 440 }}>
-      <div className="card">
-      <h1>Login</h1>
-      <form onSubmit={onSubmit} className="booking-form">
-        <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        {error && <div className="error">{error}</div>}
-        <button disabled={loading} type="submit">{loading ? 'Logging in…' : 'Login'}</button>
-      </form>
-      <p style={{ marginTop: 12 }}>No account? <Link to="/register">Register</Link></p>
-      </div>
-    </div>
+    <Box display="flex" justifyContent="center" mt={4}>
+      <Paper elevation={1} sx={{ p: 3, width: 440, maxWidth: '100%' }}>
+        <Typography variant="h5" fontWeight={700} gutterBottom>Login</Typography>
+        <Box component="form" onSubmit={onSubmit}>
+          <Stack spacing={2}>
+            <TextField label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} fullWidth required />
+            <TextField label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} fullWidth required />
+            {error && <Alert severity="error">{error}</Alert>}
+            <Button disabled={loading} type="submit" variant="contained">{loading ? 'Logging in…' : 'Login'}</Button>
+          </Stack>
+        </Box>
+        <Typography variant="body2" mt={2}>No account? <Link component={RouterLink} to="/register">Register</Link></Typography>
+      </Paper>
+    </Box>
   );
 }
 

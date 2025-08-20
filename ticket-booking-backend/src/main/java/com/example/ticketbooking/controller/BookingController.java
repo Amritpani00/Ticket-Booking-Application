@@ -29,4 +29,21 @@ public class BookingController {
 				.status(booking.getStatus().name())
 				.build());
 	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<?> get(@PathVariable Long id) {
+		return bookingService.findById(id)
+				.map(b -> ResponseEntity.ok(new Object() {
+					public final Long bookingId = b.getId();
+					public final String status = b.getStatus().name();
+					public final String trainName = b.getEvent().getName();
+					public final String trainNumber = b.getEvent().getTrainNumber();
+					public final String source = b.getEvent().getSource();
+					public final String destination = b.getEvent().getDestination();
+					public final java.util.List<String> seatLabels = b.getSeats().stream().map(s -> s.getRowLabel() + s.getSeatNumber()).toList();
+					public final java.math.BigDecimal totalAmount = b.getTotalAmount();
+					public final java.time.OffsetDateTime createdAt = b.getCreatedAt();
+				}))
+				.orElse(ResponseEntity.notFound().build());
+	}
 }
