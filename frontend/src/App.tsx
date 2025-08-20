@@ -56,6 +56,8 @@ function App() {
 
 	const [source, setSource] = useState('');
 	const [destination, setDestination] = useState('');
+	const [classType, setClassType] = useState('');
+	const [journeyDate, setJourneyDate] = useState('');
 
 	useEffect(() => {
 		let active = true;
@@ -69,6 +71,7 @@ function App() {
 			} else if (query) {
 				params.set('q', query);
 			}
+			// classType and journeyDate are client-side filters for now
 			const qs = params.toString();
 			apiGet<EventDto[]>(`/api/events${qs ? `?${qs}` : ''}`)
 				.then((data) => { if (active) setEvents(data); })
@@ -188,6 +191,17 @@ function App() {
 				<div className="search grid">
 					<input placeholder="From (source)" value={source} onChange={(e) => setSource(e.target.value)} />
 					<input placeholder="To (destination)" value={destination} onChange={(e) => setDestination(e.target.value)} />
+					<input type="date" value={journeyDate} onChange={(e) => setJourneyDate(e.target.value)} />
+					<select value={classType} onChange={(e) => setClassType(e.target.value)}>
+						<option value="">Any Class</option>
+						<option value="2S">2S</option>
+						<option value="SL">Sleeper</option>
+						<option value="3A">3A</option>
+						<option value="2A">2A</option>
+						<option value="1A">1A</option>
+						<option value="CC">Chair Car</option>
+						<option value="EC">Executive Chair</option>
+					</select>
 					<input placeholder="Search by train or station" value={query} onChange={(e) => setQuery(e.target.value)} />
 				</div>
 			</div>
@@ -200,7 +214,9 @@ function App() {
 			)}
 			{eventsError && <div className="error">{eventsError}</div>}
 			<div className="events">
-				{events.map((ev) => (
+				{events
+					.filter(ev => !classType || (ev.classType || '').toUpperCase() === classType.toUpperCase())
+					.map((ev) => (
 					<button
 						key={ev.id}
 						className={selectedEvent?.id === ev.id ? 'selected card' : 'card'}

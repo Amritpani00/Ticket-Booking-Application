@@ -75,7 +75,7 @@
 /* IRCTC-like enhancements */
 .hero { background: linear-gradient(135deg, #e0f2fe, #ffffff); border: 1px solid #bae6fd; padding: 16px; border-radius: 12px; margin-bottom: 16px; text-align: left; }
 .hero h1 { margin: 0 0 10px 0; color: #0ea5e9; }
-.search.grid { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 8px; }
+.search.grid { display: grid; grid-template-columns: 1fr 1fr auto auto 1.5fr; gap: 8px; }
 .card { border: 1px solid #e5e7eb; background: #ffffff; border-radius: 12px; text-align: left; padding: 12px; width: 100%; }
 .train-card { display: grid; gap: 6px; }
 .train-title { font-weight: 700; color: #111827; }

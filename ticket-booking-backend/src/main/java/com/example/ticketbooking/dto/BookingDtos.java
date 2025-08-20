@@ -55,4 +55,18 @@ public class BookingDtos {
         private Long bookingId;
         private String status;
     }
+
+    @Getter
+    @Setter
+    @Builder
+    public static class BookingSummaryResponse {
+        private Long bookingId;
+        private String trainName;
+        private String trainNumber;
+        private String source;
+        private String destination;
+        private String status;
+        private BigDecimal totalAmount;
+        private java.time.OffsetDateTime createdAt;
+    }
 }
