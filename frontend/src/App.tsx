@@ -168,7 +168,7 @@ function App() {
 
 	return (
 		<div>
-			<h1>Find Events</h1>
+			<h1>Ticket Booking</h1>
 			<div className="search">
 				<input
 					placeholder="Search events by name or venue"
