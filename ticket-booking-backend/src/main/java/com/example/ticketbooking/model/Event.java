@@ -22,6 +22,14 @@ public class Event {
     @Column(nullable = false)
     private String name;
 
+    // Optional: train number if representing a train schedule
+    private String trainNumber;
+
+    // Optional: origin and destination stations/cities for train journeys
+    private String source;
+
+    private String destination;
+
     @Column(nullable = false)
     private String venue;
 
@@ -35,4 +43,7 @@ public class Event {
     private BigDecimal seatPrice;
 
     private String description;
+
+    // Optional: class type for pricing context (e.g., "Sleeper", "3A", "2S")
+    private String classType;
 }

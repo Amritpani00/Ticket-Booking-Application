@@ -71,3 +71,14 @@
 
 /* Toast */
 .toast { position: fixed; right: 16px; bottom: 16px; background: #111827; color: white; padding: 12px 14px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 50; }
+
+/* IRCTC-like enhancements */
+.hero { background: linear-gradient(135deg, #e0f2fe, #ffffff); border: 1px solid #bae6fd; padding: 16px; border-radius: 12px; margin-bottom: 16px; text-align: left; }
+.hero h1 { margin: 0 0 10px 0; color: #0ea5e9; }
+.search.grid { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 8px; }
+.card { border: 1px solid #e5e7eb; background: #ffffff; border-radius: 12px; text-align: left; padding: 12px; width: 100%; }
+.train-card { display: grid; gap: 6px; }
+.train-title { font-weight: 700; color: #111827; }
+.train-route { color: #0f766e; font-weight: 600; }
+.train-meta { color: #6b7280; font-size: 0.9rem; }
+.muted { color: #6b7280; }

@@ -16,7 +16,7 @@ export default function Navbar() {
 
 	return (
 		<nav className="navbar">
-			<Link to="/" className="brand">Ticket Booking</Link>
+			<Link to="/" className="brand">IRCTC Booking</Link>
 			<div className="nav-actions">
 				<Link className="link" to="/">Home</Link>
 				{token ? (

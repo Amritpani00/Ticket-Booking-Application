@@ -7,11 +7,15 @@ import { setToken, getToken, clearToken } from './auth';
 interface EventDto {
 	id: number;
 	name: string;
+	trainNumber?: string;
+	source?: string;
+	destination?: string;
 	venue: string;
 	description?: string;
 	startTime: string;
 	endTime: string;
 	seatPrice: number;
+	classType?: string;
 }
 
 interface SeatDto {
@@ -50,18 +54,29 @@ function App() {
 	const [toast, setToast] = useState<string | null>(null);
 	const navigate = useNavigate();
 
+	const [source, setSource] = useState('');
+	const [destination, setDestination] = useState('');
+
 	useEffect(() => {
 		let active = true;
 		setLoadingEvents(true);
 		setEventsError(null);
 		const id = setTimeout(() => {
-			apiGet<EventDto[]>(`/api/events?q=${encodeURIComponent(query)}`)
+			const params = new URLSearchParams();
+			if (source && destination) {
+				params.set('source', source);
+				params.set('destination', destination);
+			} else if (query) {
+				params.set('q', query);
+			}
+			const qs = params.toString();
+			apiGet<EventDto[]>(`/api/events${qs ? `?${qs}` : ''}`)
 				.then((data) => { if (active) setEvents(data); })
-				.catch((err) => { if (active) setEventsError(err.message || 'Failed to load events'); })
+				.catch((err) => { if (active) setEventsError(err.message || 'Failed to load trains'); })
 				.finally(() => { if (active) setLoadingEvents(false); });
 		}, 300);
 		return () => { active = false; clearTimeout(id); };
-	}, [query]);
+	}, [query, source, destination]);
 
 	useEffect(() => {
 		if (!selectedEvent) return;
@@ -168,13 +183,13 @@ function App() {
 
 	return (
 		<div>
-			<h1>Ticket Booking</h1>
-			<div className="search">
-				<input
-					placeholder="Search events by name or venue"
-					value={query}
-					onChange={(e) => setQuery(e.target.value)}
-				/>
+			<div className="hero">
+				<h1>IRCTC-like Train Booking</h1>
+				<div className="search grid">
+					<input placeholder="From (source)" value={source} onChange={(e) => setSource(e.target.value)} />
+					<input placeholder="To (destination)" value={destination} onChange={(e) => setDestination(e.target.value)} />
+					<input placeholder="Search by train or station" value={query} onChange={(e) => setQuery(e.target.value)} />
+				</div>
 			</div>
 			{loadingEvents && (
 				<div style={{ display: 'grid', gap: 8, marginBottom: 12 }}>
@@ -188,17 +203,22 @@ function App() {
 				{events.map((ev) => (
 					<button
 						key={ev.id}
-						className={selectedEvent?.id === ev.id ? 'selected' : ''}
+						className={selectedEvent?.id === ev.id ? 'selected card' : 'card'}
 						onClick={() => setSelectedEvent(ev)}
 					>
-						{ev.name} — {ev.venue}
+						<div className="train-card">
+							<div className="train-title">{ev.trainNumber ? `${ev.trainNumber} — ${ev.name}` : ev.name}</div>
+							<div className="train-route">{ev.source || ev.venue} → {ev.destination || 'Destination'}</div>
+							<div className="train-meta">Dep: {new Date(ev.startTime).toLocaleString()} • Arr: {new Date(ev.endTime).toLocaleString()} • Class: {ev.classType || 'General'} • Fare: ₹{ev.seatPrice.toFixed(2)}</div>
+						</div>
 					</button>
 				))}
 			</div>
 
 			{selectedEvent && (
 				<div className="event-details">
-					<h2>{selectedEvent.name}</h2>
+					<h2>{selectedEvent.trainNumber ? `${selectedEvent.trainNumber} — ${selectedEvent.name}` : selectedEvent.name}</h2>
+					<p className="muted">{(selectedEvent.source || selectedEvent.venue)} → {selectedEvent.destination || 'Destination'} • Class: {selectedEvent.classType || 'General'}</p>
 					<p>{selectedEvent.description}</p>
 					<p>
 						Price: ₹{selectedEvent.seatPrice.toFixed(2)} | Selected: {selectedSeatIds.length} |

@@ -14,6 +14,6 @@ describe('App', () => {
 				<App />
 			</MemoryRouter>
 		);
-		expect(r.container.textContent).toContain('Ticket Booking');
+		expect(r.container.textContent).toContain('IRCTC-like Train Booking');
 	});
 });

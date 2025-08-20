@@ -22,8 +22,15 @@ public class EventController {
     private final SeatRepository seatRepository;
 
     @GetMapping
-    public List<EventDtos.EventResponse> list(@RequestParam(value = "q", required = false) String q) {
-        List<Event> events = (q == null || q.isBlank()) ? eventRepository.findAll() : eventRepository.searchByText(q);
+    public List<EventDtos.EventResponse> list(@RequestParam(value = "q", required = false) String q,
+                                              @RequestParam(value = "source", required = false) String source,
+                                              @RequestParam(value = "destination", required = false) String destination) {
+        List<Event> events;
+        if (source != null && !source.isBlank() && destination != null && !destination.isBlank()) {
+            events = eventRepository.searchByRoute(source, destination);
+        } else {
+            events = (q == null || q.isBlank()) ? eventRepository.findAll() : eventRepository.searchByText(q);
+        }
         return events.stream().map(this::toDto).collect(Collectors.toList());
     }
 
@@ -38,11 +45,15 @@ public class EventController {
         return EventDtos.EventResponse.builder()
                 .id(e.getId())
                 .name(e.getName())
+                .trainNumber(e.getTrainNumber())
+                .source(e.getSource())
+                .destination(e.getDestination())
                 .venue(e.getVenue())
                 .description(e.getDescription())
                 .startTime(e.getStartTime())
                 .endTime(e.getEndTime())
                 .seatPrice(e.getSeatPrice())
+                .classType(e.getClassType())
                 .build();
     }
 }
