@@ -220,6 +220,7 @@ function App() {
 					<h2>{selectedEvent.trainNumber ? `${selectedEvent.trainNumber} — ${selectedEvent.name}` : selectedEvent.name}</h2>
 					<p className="muted">{(selectedEvent.source || selectedEvent.venue)} → {selectedEvent.destination || 'Destination'} • Class: {selectedEvent.classType || 'General'}</p>
 					<p>{selectedEvent.description}</p>
+					<div className="muted" style={{ margin: '8px 0' }}>Seat legend: <span style={{ display: 'inline-block', width: 12, height: 12, background: '#22c55e', marginRight: 4 }}></span> Selected • <span style={{ display: 'inline-block', width: 12, height: 12, background: '#f3f4f6', marginRight: 4, border: '1px solid #ddd' }}></span> Unavailable</div>
 					<p>
 						Price: ₹{selectedEvent.seatPrice.toFixed(2)} | Selected: {selectedSeatIds.length} |
 						Total: ₹{total.toFixed(2)}

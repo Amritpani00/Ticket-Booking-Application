@@ -46,9 +46,9 @@
 .navbar .brand { font-weight: 700; color: inherit; }
 .navbar .nav-actions { display: flex; gap: 10px; }
 .search input { width: 100%; padding: 8px; margin-bottom: 12px; }
-.events { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-.events button { padding: 6px 10px; border: 1px solid #ccc; background: #fff; cursor: pointer; border-radius: 6px; }
-.events button.selected { background: #0ea5e9; color: white; border-color: #0ea5e9; }
+.events { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-bottom: 12px; }
+.events button { padding: 0; border: 1px solid #e5e7eb; background: #fff; cursor: pointer; border-radius: 12px; }
+.events button.selected { outline: 2px solid #0ea5e9; }
 .seat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 6px; }
 .seat { padding: 10px; border: 1px solid #ccc; background: #fff; cursor: pointer; border-radius: 6px; }
 .seat.active { background: #22c55e; color: white; border-color: #22c55e; }

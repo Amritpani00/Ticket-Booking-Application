@@ -22,7 +22,7 @@ export default function Navbar() {
 				{token ? (
 					<>
 						<button className="link" onClick={() => navigate('/dashboard')}>Dashboard</button>
-						<button className="link" onClick={() => { clearToken(); setToken(null); navigate('/'); }}>Logout</button>
+						<Link className="link" to="/logout">Logout</Link>
 					</>
 				) : (
 					<>
