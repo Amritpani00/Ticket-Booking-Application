@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -107,5 +108,9 @@ public class BookingService {
         }
 
         return bookingRepository.save(booking);
+    }
+
+    public Optional<Booking> findById(Long id) {
+        return bookingRepository.findById(id);
     }
 }

@@ -8,6 +8,7 @@ import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import Logout from './pages/Logout'
 import Layout from './components/Layout'
+import Ticket from './pages/Ticket'
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
       { path: 'register', element: <Register /> },
       { path: 'dashboard', element: <Dashboard /> },
       { path: 'logout', element: <Logout /> },
+      { path: 'ticket/:id', element: <Ticket /> },
     ],
   },
 ])

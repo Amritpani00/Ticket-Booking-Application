@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { getToken } from '../auth';
 import { apiGet } from '../api';
+import { Alert, Box, Card, CardContent, Chip, Link, Skeleton, Stack, Typography } from '@mui/material';
 
 interface EventItem { id: number; name: string; venue: string; seatPrice: number; }
 interface BookingSummary { bookingId: number; trainName: string; trainNumber?: string; source?: string; destination?: string; status: string; totalAmount: number; createdAt: string; }
@@ -31,29 +32,44 @@ export default function Dashboard() {
   }, [token]);
 
   return (
-    <div>
-      <div className="card" style={{ marginBottom: 12 }}>
-        <h1>Dashboard</h1>
-        <p>Welcome! Browse trains or continue booking.</p>
-      </div>
-      {loading && <div className="loading">Loading…</div>}
-      {error && <div className="error">{error}</div>}
-      <div className="events">
+    <Box>
+      <Card sx={{ mb: 2 }}>
+        <CardContent>
+          <Typography variant="h5" fontWeight={700}>Dashboard</Typography>
+          <Typography variant="body2" color="text.secondary">Welcome! Browse trains or continue booking.</Typography>
+        </CardContent>
+      </Card>
+      {loading && <Skeleton variant="rectangular" height={40} />}
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 2, mb: 2 }}>
         {events.map(ev => (
-          <Link key={ev.id} to={`/`} className="card" style={{ textDecoration: 'none' }}>{ev.name} — {ev.venue} (₹{ev.seatPrice.toFixed(2)})</Link>
+          <Card key={ev.id}>
+            <CardContent>
+              <Stack>
+                <Link component={RouterLink} to={`/`} underline="hover" variant="subtitle1" fontWeight={700}>{ev.name}</Link>
+                <Typography variant="body2" color="text.secondary">{ev.venue}</Typography>
+                <Chip size="small" color="success" label={`₹${ev.seatPrice.toFixed(2)}`} sx={{ mt: 1, alignSelf: 'flex-start' }} />
+              </Stack>
+            </CardContent>
+          </Card>
         ))}
-      </div>
-      <div className="card" style={{ marginTop: 12, textAlign: 'left' }}>
-        <h2>Your Bookings</h2>
-        {bookings.length === 0 && <p className="muted">No bookings yet.</p>}
-        {bookings.map(b => (
-          <div key={b.bookingId} style={{ padding: 8, borderBottom: '1px solid #eee' }}>
-            <div style={{ fontWeight: 600 }}>{b.trainNumber ? `${b.trainNumber} — ${b.trainName}` : b.trainName}</div>
-            <div className="muted">{b.source} → {b.destination} • ₹{b.totalAmount.toFixed(2)} • {b.status} • {new Date(b.createdAt).toLocaleString()}</div>
-          </div>
-        ))}
-      </div>
-    </div>
+      </Box>
+      <Card>
+        <CardContent>
+          <Typography variant="h6" fontWeight={700} gutterBottom>Your Bookings</Typography>
+          {bookings.length === 0 && <Typography variant="body2" color="text.secondary">No bookings yet.</Typography>}
+          <Stack>
+            {bookings.map(b => (
+              <Box key={b.bookingId} sx={{ py: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
+                <Typography fontWeight={600}>
+                  {b.trainNumber ? `${b.trainNumber} — ${b.trainName}` : b.trainName}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">{b.source} → {b.destination} • ₹{b.totalAmount.toFixed(2)} • {b.status} • {new Date(b.createdAt).toLocaleString()}</Typography>
+              </Box>
+            ))}
+          </Stack>
+        </CardContent>
+      </Card>
+    </Box>
   );
 }
-
