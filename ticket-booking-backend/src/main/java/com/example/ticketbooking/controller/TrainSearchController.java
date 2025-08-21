@@ -1,16 +1,18 @@
 package com.example.ticketbooking.controller;
 
 import com.example.ticketbooking.dto.EventDtos;
-import com.example.ticketbooking.model.Event;
-import com.example.ticketbooking.repository.EventRepository;
-import com.example.ticketbooking.repository.StationRepository;
+import com.example.ticketbooking.dto.CoachDtos;
+import com.example.ticketbooking.model.*;
+import com.example.ticketbooking.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -21,6 +23,10 @@ public class TrainSearchController {
 
     private final EventRepository eventRepository;
     private final StationRepository stationRepository;
+    private final SeatRepository seatRepository;
+    private final CoachRepository coachRepository;
+    private final FareRepository fareRepository;
+    private final WaitlistRepository waitlistRepository;
 
     @GetMapping("/advanced")
     public List<EventDtos.EventResponse> advancedSearch(
@@ -124,9 +130,233 @@ public class TrainSearchController {
         return events.stream().map(this::toDto).collect(Collectors.toList());
     }
 
+    @GetMapping("/by-train-number/{trainNumber}")
+    public ResponseEntity<EventDtos.EventResponse> searchByTrainNumber(@PathVariable String trainNumber) {
+        List<Event> trains = eventRepository.findByTrainNumber(trainNumber);
+        if (trains.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(toDto(trains.get(0)));
+    }
+
+    @GetMapping("/by-train-name/{trainName}")
+    public ResponseEntity<List<EventDtos.EventResponse>> searchByTrainName(@PathVariable String trainName) {
+        List<Event> trains = eventRepository.searchByText(trainName);
+        return ResponseEntity.ok(trains.stream().map(this::toDto).collect(Collectors.toList()));
+    }
+
+    @GetMapping("/seat-availability/{eventId}")
+    public ResponseEntity<Map<String, Object>> getSeatAvailability(
+            @PathVariable Long eventId,
+            @RequestParam String classType,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate journeyDate) {
+        
+        try {
+            Event event = eventRepository.findById(eventId).orElse(null);
+            if (event == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Get coaches for the specified class type
+            List<Coach> coaches = coachRepository.findByEvent_IdAndClassType(eventId, classType);
+            
+            int totalSeats = 0;
+            int availableSeats = 0;
+            int bookedSeats = 0;
+            int waitlistCount = 0;
+
+            for (Coach coach : coaches) {
+                List<Seat> seats = seatRepository.findByCoach_Id(coach.getId());
+                totalSeats += seats.size();
+                
+                for (Seat seat : seats) {
+                    if (seat.getStatus() == Seat.Status.AVAILABLE) {
+                        availableSeats++;
+                    } else if (seat.getStatus() == Seat.Status.BOOKED) {
+                        bookedSeats++;
+                    }
+                }
+            }
+
+            // Check waitlist
+            List<Waitlist> waitlist = waitlistRepository.findByEvent_IdAndClassTypeAndJourneyDate(eventId, classType, journeyDate);
+            waitlistCount = waitlist.size();
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("eventId", eventId);
+            response.put("classType", classType);
+            response.put("journeyDate", journeyDate);
+            response.put("totalSeats", totalSeats);
+            response.put("availableSeats", availableSeats);
+            response.put("bookedSeats", bookedSeats);
+            response.put("waitlistCount", waitlistCount);
+            response.put("hasWaitlist", waitlistCount > 0);
+            response.put("status", availableSeats > 0 ? "AVAILABLE" : "WAITLIST");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/fare-enquiry")
+    public ResponseEntity<Map<String, Object>> getFareEnquiry(
+            @RequestParam Long eventId,
+            @RequestParam String classType,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate journeyDate,
+            @RequestParam Integer numberOfPassengers) {
+        
+        try {
+            Event event = eventRepository.findById(eventId).orElse(null);
+            if (event == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Get base fare for the class type
+            Optional<Fare> fareOpt = fareRepository.findActiveFareByEventAndClassType(eventId, classType, journeyDate);
+            
+            BigDecimal baseFare = event.getSeatPrice();
+            BigDecimal reservationCharge = new BigDecimal("40");
+            BigDecimal superfastCharge = new BigDecimal("0");
+            BigDecimal tatkalCharge = new BigDecimal("0");
+            BigDecimal gst = new BigDecimal("0");
+            BigDecimal dynamicPricing = new BigDecimal("0");
+
+            if (fareOpt.isPresent()) {
+                Fare fare = fareOpt.get();
+                baseFare = fare.getBaseFare();
+                if (fare.getReservationCharge() != null) reservationCharge = fare.getReservationCharge();
+                if (fare.getSuperfastCharge() != null) superfastCharge = fare.getSuperfastCharge();
+                if (fare.getTatkalCharge() != null) tatkalCharge = fare.getTatkalCharge();
+                if (fare.getDynamicPricing() != null) dynamicPricing = fare.getDynamicPricing();
+            }
+
+            // Calculate GST (5% on base fare)
+            gst = baseFare.multiply(new BigDecimal("0.05"));
+
+            // Calculate total fare per passenger
+            BigDecimal farePerPassenger = baseFare
+                .add(reservationCharge)
+                .add(superfastCharge)
+                .add(tatkalCharge)
+                .add(gst)
+                .add(dynamicPricing);
+
+            // Calculate total fare for all passengers
+            BigDecimal totalFare = farePerPassenger.multiply(new BigDecimal(numberOfPassengers));
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("eventId", eventId);
+            response.put("classType", classType);
+            response.put("journeyDate", journeyDate);
+            response.put("numberOfPassengers", numberOfPassengers);
+            response.put("baseFare", baseFare);
+            response.put("reservationCharge", reservationCharge);
+            response.put("superfastCharge", superfastCharge);
+            response.put("tatkalCharge", tatkalCharge);
+            response.put("gst", gst);
+            response.put("dynamicPricing", dynamicPricing);
+            response.put("farePerPassenger", farePerPassenger);
+            response.put("totalFare", totalFare);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/waitlist-status/{eventId}")
+    public ResponseEntity<Map<String, Object>> getWaitlistStatus(
+            @PathVariable Long eventId,
+            @RequestParam String classType,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate journeyDate) {
+        
+        try {
+            List<Waitlist> waitlist = waitlistRepository.findByEvent_IdAndClassTypeAndJourneyDate(eventId, classType, journeyDate);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("eventId", eventId);
+            response.put("classType", classType);
+            response.put("journeyDate", journeyDate);
+            response.put("waitlistCount", waitlist.size());
+            response.put("waitlistDetails", waitlist.stream()
+                .map(w -> Map.of(
+                    "waitlistNumber", w.getWaitlistNumber(),
+                    "status", w.getStatus(),
+                    "numberOfSeats", w.getNumberOfSeats(),
+                    "waitlistDate", w.getWaitlistDate()
+                ))
+                .collect(Collectors.toList()));
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/train-schedule/{eventId}")
+    public ResponseEntity<Map<String, Object>> getTrainSchedule(@PathVariable Long eventId) {
+        try {
+            Event event = eventRepository.findById(eventId).orElse(null);
+            if (event == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            Map<String, Object> schedule = new HashMap<>();
+            schedule.put("trainNumber", event.getTrainNumber());
+            schedule.put("trainName", event.getName());
+            schedule.put("source", event.getSource());
+            schedule.put("destination", event.getDestination());
+            schedule.put("departureTime", event.getStartTime());
+            schedule.put("arrivalTime", event.getEndTime());
+            schedule.put("journeyDuration", event.getJourneyDurationMinutes());
+            schedule.put("intermediateStations", event.getIntermediateStations());
+            schedule.put("platformNumber", event.getPlatformNumber());
+            schedule.put("runningDays", event.getRunningDays());
+
+            return ResponseEntity.ok(schedule);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/available-classes/{eventId}")
+    public ResponseEntity<List<Map<String, Object>>> getAvailableClasses(@PathVariable Long eventId) {
+        try {
+            List<Coach> coaches = coachRepository.findByEvent_IdOrderByPositionAscIdAsc(eventId);
+            
+            List<Map<String, Object>> classes = new ArrayList<>();
+            Set<String> processedClasses = new HashSet<>();
+
+            for (Coach coach : coaches) {
+                if (!processedClasses.contains(coach.getClassType())) {
+                    long available = seatRepository.countByCoach_IdAndStatus(coach.getId(), Seat.Status.AVAILABLE);
+                    long reserved = seatRepository.countByCoach_IdAndStatus(coach.getId(), Seat.Status.RESERVED);
+                    long booked = seatRepository.countByCoach_IdAndStatus(coach.getId(), Seat.Status.BOOKED);
+                    long total = available + reserved + booked;
+
+                    Map<String, Object> classInfo = new HashMap<>();
+                    classInfo.put("classType", coach.getClassType());
+                    classInfo.put("available", available);
+                    classInfo.put("reserved", reserved);
+                    classInfo.put("booked", booked);
+                    classInfo.put("total", total);
+                    classInfo.put("coachCode", coach.getCode());
+
+                    classes.add(classInfo);
+                    processedClasses.add(coach.getClassType());
+                }
+            }
+
+            return ResponseEntity.ok(classes);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(List.of(Map.of("error", e.getMessage())));
+        }
+    }
+
     @GetMapping("/filters")
     public ResponseEntity<?> getAvailableFilters() {
-        return ResponseEntity.ok(java.util.Map.of(
+        return ResponseEntity.ok(Map.of(
                 "trainTypes", eventRepository.findAllTrainTypes(),
                 "trainCategories", eventRepository.findAllTrainCategories(),
                 "trainOperators", eventRepository.findAllTrainOperators(),
@@ -138,13 +368,12 @@ public class TrainSearchController {
 
     @GetMapping("/popular-routes")
     public ResponseEntity<?> getPopularRoutes() {
-        // Return some popular routes
         return ResponseEntity.ok(List.of(
-                java.util.Map.of("source", "New Delhi", "destination", "Mumbai Central", "code", "NDLS-BCT"),
-                java.util.Map.of("source", "Mumbai Central", "destination", "New Delhi", "code", "BCT-NDLS"),
-                java.util.Map.of("source", "Kolkata", "destination", "New Delhi", "code", "HWH-NDLS"),
-                java.util.Map.of("source", "Chennai Central", "destination", "Bangalore City", "code", "MAS-SBC"),
-                java.util.Map.of("source", "Bangalore City", "destination", "Chennai Central", "code", "SBC-MAS")
+                Map.of("source", "New Delhi", "destination", "Mumbai Central", "code", "NDLS-BCT"),
+                Map.of("source", "Mumbai Central", "destination", "New Delhi", "code", "BCT-NDLS"),
+                Map.of("source", "Kolkata", "destination", "New Delhi", "code", "HWH-NDLS"),
+                Map.of("source", "Chennai Central", "destination", "Bangalore City", "code", "MAS-SBC"),
+                Map.of("source", "Bangalore City", "destination", "Chennai Central", "code", "SBC-MAS")
         ));
     }
 
