@@ -111,6 +111,6 @@ public class BookingService {
     }
 
     public Optional<Booking> findById(Long id) {
-        return bookingRepository.findById(id);
+        return bookingRepository.findByIdWithEventAndSeats(id);
     }
 }

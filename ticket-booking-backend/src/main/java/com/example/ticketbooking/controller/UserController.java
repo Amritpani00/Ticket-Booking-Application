@@ -25,7 +25,7 @@ public class UserController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<BookingDtos.BookingSummaryResponse>> myBookings(@AuthenticationPrincipal User principal) {
         String email = principal.getUsername();
-        List<Booking> bookings = bookingRepository.findByCustomerEmailIgnoreCaseOrderByCreatedAtDesc(email);
+        List<Booking> bookings = bookingRepository.findSummariesByCustomerEmailIgnoreCaseOrderByCreatedAtDesc(email);
         List<BookingDtos.BookingSummaryResponse> resp = bookings.stream().map(b -> BookingDtos.BookingSummaryResponse.builder()
                 .bookingId(b.getId())
                 .trainName(b.getEvent().getName())
