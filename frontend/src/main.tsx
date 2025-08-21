@@ -11,20 +11,26 @@ import Layout from './components/Layout'
 import Ticket from './pages/Ticket'
 import Admin from './pages/Admin'
 import Profile from './pages/Profile'
+import ProtectedRoute from './components/ProtectedRoute'
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Layout />,
     children: [
-      { index: true, element: <App /> },
       { path: 'login', element: <Login /> },
       { path: 'register', element: <Register /> },
-      { path: 'dashboard', element: <Dashboard /> },
-      { path: 'logout', element: <Logout /> },
-      { path: 'ticket/:id', element: <Ticket /> },
-      { path: 'profile', element: <Profile /> },
-      { path: 'admin', element: <Admin /> },
+      {
+        element: <ProtectedRoute />,
+        children: [
+          { index: true, element: <App /> },
+          { path: 'dashboard', element: <Dashboard /> },
+          { path: 'logout', element: <Logout /> },
+          { path: 'ticket/:id', element: <Ticket /> },
+          { path: 'profile', element: <Profile /> },
+          { path: 'admin', element: <Admin /> },
+        ],
+      },
     ],
   },
 ])

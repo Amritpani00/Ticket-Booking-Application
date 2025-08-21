@@ -3,6 +3,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { apiPost } from '../api';
 import { setToken } from '../auth';
 import { Alert, Box, Button, Link, Stack, TextField, Typography, Paper } from '@mui/material';
+import AnimatedTrain from '../components/AnimatedTrain';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -31,6 +32,8 @@ export default function Register() {
     <Box display="flex" justifyContent="center" mt={4}>
       <Paper elevation={1} sx={{ p: 3, width: 440, maxWidth: '100%' }}>
         <Typography variant="h5" fontWeight={700} gutterBottom>Register</Typography>
+        <Typography variant="body2" color="text.secondary" gutterBottom>Create your account to book and manage tickets.</Typography>
+        <AnimatedTrain />
         <Box component="form" onSubmit={onSubmit}>
           <Stack spacing={2}>
             <TextField label="Name" value={name} onChange={(e) => setName(e.target.value)} fullWidth required />
