@@ -38,6 +38,13 @@ public class EventController {
         return events.stream().map(this::toDto).collect(Collectors.toList());
     }
 
+    @GetMapping("/{eventId}")
+    public ResponseEntity<EventDtos.EventResponse> get(@PathVariable Long eventId) {
+        return eventRepository.findById(eventId)
+                .map(e -> ResponseEntity.ok(toDto(e)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @GetMapping("/{eventId}/seats")
     public ResponseEntity<List<Seat>> seats(@PathVariable Long eventId) {
         return eventRepository.findById(eventId)

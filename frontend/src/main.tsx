@@ -12,6 +12,8 @@ import Ticket from './pages/Ticket'
 import Admin from './pages/Admin'
 import Profile from './pages/Profile'
 import ProtectedRoute from './components/ProtectedRoute'
+import History from './pages/History'
+import Fare from './pages/Fare'
 
 const router = createBrowserRouter([
   {
@@ -25,6 +27,8 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <App /> },
           { path: 'dashboard', element: <Dashboard /> },
+          { path: 'history', element: <History /> },
+          { path: 'fare', element: <Fare /> },
           { path: 'logout', element: <Logout /> },
           { path: 'ticket/:id', element: <Ticket /> },
           { path: 'profile', element: <Profile /> },
