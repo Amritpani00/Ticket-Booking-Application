@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { getToken } from '../auth';
+import { getRole, getToken } from '../auth';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -10,6 +10,7 @@ import Box from '@mui/material/Box';
 export default function Navbar() {
 	const navigate = useNavigate();
 	const [token, setToken] = useState<string | null>(() => getToken());
+	const role = getRole();
 
 	useEffect(() => {
 		function onStorage(e: StorageEvent) {
@@ -29,6 +30,8 @@ export default function Navbar() {
 				{token ? (
 					<>
 						<Button color="inherit" onClick={() => navigate('/dashboard')}>Dashboard</Button>
+						<Button color="inherit" component={RouterLink} to="/profile">Profile</Button>
+						{role === 'ADMIN' && <Button color="inherit" component={RouterLink} to="/admin">Admin</Button>}
 						<Button color="inherit" component={RouterLink} to="/logout">Logout</Button>
 					</>
 				) : (
