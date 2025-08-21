@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.DayOfWeek;
+import java.util.Set;
 
 @Entity
 @Table(name = "events")
@@ -22,12 +24,11 @@ public class Event {
     @Column(nullable = false)
     private String name;
 
-    // Optional: train number if representing a train schedule
+    // Train number for identification
     private String trainNumber;
 
-    // Optional: origin and destination stations/cities for train journeys
+    // Origin and destination stations
     private String source;
-
     private String destination;
 
     @Column(nullable = false)
@@ -44,6 +45,23 @@ public class Event {
 
     private String description;
 
-    // Optional: class type for pricing context (e.g., "Sleeper", "3A", "2S")
+    // Class type for pricing context (e.g., "Sleeper", "3A", "2S")
     private String classType;
+    
+    // Enhanced train information
+    private String trainType; // Express, Superfast, Passenger, etc.
+    private String platformNumber;
+    private Integer totalCoaches;
+    private String runningDays; // Comma-separated days like "MON,TUE,WED,THU,FRI,SAT,SUN"
+    private Boolean isRunningToday;
+    private String intermediateStations; // Comma-separated station names
+    private Integer journeyDurationMinutes;
+    private String trainCategory; // Premium, Regular, etc.
+    private Boolean hasPantry;
+    private Boolean hasAC;
+    private String trainOperator; // IRCTC, Private, etc.
+    private String routeType; // Main line, Branch line, etc.
+    private Integer averageSpeed; // in km/h
+    private String trainStatus; // On Time, Delayed, Cancelled, etc.
+    private Integer delayMinutes;
 }
