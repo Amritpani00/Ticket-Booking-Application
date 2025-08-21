@@ -13,4 +13,4 @@ spring:
 app:
   payment:
     razorpay:
-      enabled: false
+      enabled: ${RAZORPAY_ENABLED:false}
