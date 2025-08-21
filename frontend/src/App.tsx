@@ -3,19 +3,25 @@ import './App.css';
 import { useNavigate } from 'react-router-dom';
 import { apiGet, apiPost } from './api';
 import { getToken } from './auth';
-import { Alert, Box, Button, Card, CardContent, Chip, Divider, Skeleton, Stack, TextField, Typography, Tabs, Tab, Grid, Stepper, Step, StepLabel } from '@mui/material';
+import { Alert, Box, Button, Card, CardContent, Chip, Divider, Skeleton, Stack, TextField, Typography, Tabs, Tab, Grid, Stepper, Step, StepLabel, Container, Paper } from '@mui/material';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import AnimatedClouds from './components/AnimatedClouds';
 import PulseIcons from './components/PulseIcons';
 import GradientBanner from './components/GradientBanner';
 import DottedLine from './components/DottedLine';
 import BouncyCta from './components/BouncyCta';
 import Confetti from './components/Confetti';
-import AdvancedTrainSearch from './components/AdvancedTrainSearch';
+import ProfessionalHeader from './components/ProfessionalHeader';
+import InteractiveTrainSearch from './components/InteractiveTrainSearch';
+import ProfessionalDashboard from './components/ProfessionalDashboard';
 import EnhancedTrainCard from './components/EnhancedTrainCard';
 import PassengerDetailsForm from './components/PassengerDetailsForm';
 import BookingSummary from './components/BookingSummary';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
+import TrainIcon from '@mui/icons-material/Train';
 
 interface EventDto { 
   id: number; 
@@ -91,6 +97,67 @@ function formatSeat(seat: SeatDto) { return `${seat.rowLabel}${seat.seatNumber}`
 function classLabelToAcType(classType?: string) { if (!classType) return 'General'; const t = classType.toUpperCase(); return (['1A','2A','3A','EC'].includes(t)) ? 'AC' : 'Non-AC'; }
 function classCategoryOf(classType?: string) { if (!classType) return 'General'; const t = classType.toUpperCase(); if (['1A','2A','3A','EC','CC'].includes(t)) return 'AC'; if (['SL'].includes(t)) return 'Sleeper'; if (['GEN','2S'].includes(t)) return 'General'; return 'General'; }
 
+// Create professional theme
+const professionalTheme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+      light: '#42a5f5',
+      dark: '#1565c0',
+    },
+    secondary: {
+      main: '#dc004e',
+      light: '#ff5983',
+      dark: '#9a0036',
+    },
+    background: {
+      default: '#f8fafc',
+      paper: '#ffffff',
+    },
+  },
+  typography: {
+    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    h4: {
+      fontWeight: 700,
+      letterSpacing: '-0.5px',
+    },
+    h5: {
+      fontWeight: 600,
+      letterSpacing: '-0.3px',
+    },
+    h6: {
+      fontWeight: 600,
+      letterSpacing: '-0.2px',
+    },
+    button: {
+      fontWeight: 600,
+      textTransform: 'none',
+    },
+  },
+  shape: {
+    borderRadius: 12,
+  },
+  components: {
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+          border: '1px solid rgba(0, 0, 0, 0.04)',
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          textTransform: 'none',
+          fontWeight: 600,
+        },
+      },
+    },
+  },
+});
+
 function App() {
   const [query, setQuery] = useState('');
   const [events, setEvents] = useState<EventDto[]>([]);
@@ -139,6 +206,31 @@ function App() {
   const [passengers, setPassengers] = useState<PassengerInfo[]>([]);
   const [showPassengerForm, setShowPassengerForm] = useState(false);
   const [showBookingSummary, setShowBookingSummary] = useState(false);
+
+  // Professional features
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(true);
+
+  // Dashboard stats
+  const dashboardStats = useMemo(() => ({
+    totalTrains: 13,
+    activeBookings: 5,
+    totalRevenue: 45000,
+    averageSpeed: 75,
+    onTimePercentage: 92,
+    popularRoutes: [
+      { source: 'New Delhi', destination: 'Mumbai Central', bookings: 156, rating: 4.5 },
+      { source: 'Mumbai Central', destination: 'New Delhi', bookings: 142, rating: 4.3 },
+      { source: 'Kolkata', destination: 'New Delhi', bookings: 98, rating: 4.2 },
+      { source: 'Chennai Central', destination: 'Bangalore City', bookings: 87, rating: 4.1 },
+      { source: 'New Delhi', destination: 'Ahmedabad Junction', bookings: 76, rating: 4.4 }
+    ],
+    recentBookings: [
+      { id: '1', trainNumber: '12951', source: 'New Delhi', destination: 'Mumbai Central', status: 'confirmed' as const, amount: 2500 },
+      { id: '2', trainNumber: '12213', source: 'New Delhi', destination: 'Howrah Junction', status: 'pending' as const, amount: 1800 },
+      { id: '3', trainNumber: '12004', source: 'New Delhi', destination: 'Lucknow Charbagh', status: 'confirmed' as const, amount: 1200 }
+    ]
+  }), []);
 
   useEffect(() => {
     let active = true;
@@ -239,6 +331,7 @@ function App() {
   const handleAdvancedSearch = (filters: SearchFilters) => {
     setSearchFilters(filters);
     setSearchMode('advanced');
+    setShowDashboard(false);
   };
 
   const handleClearSearch = () => {
@@ -262,10 +355,10 @@ function App() {
     setClassType('');
     setJourneyDate('');
     setQuery('');
+    setShowDashboard(true);
   };
 
   const handleViewTrainDetails = (train: EventDto) => {
-    // Navigate to train details page or show modal
     console.log('View train details:', train);
   };
 
@@ -306,7 +399,6 @@ function App() {
       setToast('Please login or register first'); 
       return; 
     }
-    // Add to waitlist logic
     setToast('Added to waitlist successfully');
   };
 
@@ -316,6 +408,33 @@ function App() {
     setShowPassengerForm(false);
     setShowBookingSummary(false);
     setBookingStep(0);
+  };
+
+  const handleQuickAction = (action: string) => {
+    switch (action) {
+      case 'book':
+        setShowDashboard(false);
+        break;
+      case 'history':
+        navigate('/history');
+        break;
+      case 'notifications':
+        navigate('/notifications');
+        break;
+      case 'help':
+        navigate('/help');
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleThemeToggle = () => {
+    setIsDarkMode(!isDarkMode);
+  };
+
+  const handleSearchClick = () => {
+    setShowDashboard(false);
   };
 
   async function createBooking() {
@@ -367,7 +486,7 @@ function App() {
       key: data.razorpayKeyId, 
       amount: Math.round(data.amount * 100), 
       currency: data.currency, 
-      name: 'Train Ticket Booking', 
+      name: 'IRCTC Pro - Train Ticket Booking', 
       description: `Train: ${selectedEvent?.trainNumber} - ${selectedEvent?.name}`, 
       order_id: data.orderId, 
       prefill: { 
@@ -396,201 +515,209 @@ function App() {
   const steps = ['Select Train & Seats', 'Passenger Details', 'Booking Summary & Payment'];
 
   return (
-    <Box>
-      <Card sx={{ mb: 2 }}>
-        <CardContent>
-          <Typography variant="h5" fontWeight={700} gutterBottom>IRCTC-like Train Booking</Typography>
-          <GradientBanner />
-          <AnimatedClouds />
-          <PulseIcons />
-          <DottedLine />
-          
-          {/* Search Mode Tabs */}
-          <Tabs 
-            value={searchMode} 
-            onChange={(_, newValue) => setSearchMode(newValue)}
-            sx={{ mb: 2 }}
-          >
-            <Tab label="Basic Search" value="basic" />
-            <Tab label="Advanced Search" value="advanced" />
-          </Tabs>
+    <ThemeProvider theme={professionalTheme}>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+          {/* Professional Header */}
+          <ProfessionalHeader
+            onSearchClick={handleSearchClick}
+            onThemeToggle={handleThemeToggle}
+            isDarkMode={isDarkMode}
+          />
 
-          {searchMode === 'basic' ? (
-            // Basic Search
-            <Stack direction={{ xs: 'column', md: 'row' }} spacing={1} useFlexGap flexWrap="wrap" alignItems="center">
-              <TextField label="From (source)" value={source} onChange={(e) => setSource(e.target.value)} sx={{ minWidth: { xs: '100%', md: 220 }, flex: 1 }} />
-              <TextField label="To (destination)" value={destination} onChange={(e) => setDestination(e.target.value)} sx={{ minWidth: { xs: '100%', md: 220 }, flex: 1 }} />
-              <Box sx={{ minWidth: { xs: '100%', md: 200 } }}>
-                <DatePicker label="Journey date" value={journeyDate ? dayjs(journeyDate) : null} onChange={(d) => setJourneyDate(d ? d.format('YYYY-MM-DD') : '')} slotProps={{ textField: { fullWidth: true } }} />
+          <Container maxWidth="xl" sx={{ py: 3 }}>
+            {/* Dashboard */}
+            {showDashboard && (
+              <ProfessionalDashboard
+                stats={dashboardStats}
+                onQuickAction={handleQuickAction}
+              />
+            )}
+
+            {/* Search Section */}
+            {!showDashboard && (
+              <>
+                {/* Interactive Search */}
+                <InteractiveTrainSearch
+                  onSearch={handleAdvancedSearch}
+                  onClear={handleClearSearch}
+                  filters={searchFilters}
+                  loading={loadingEvents}
+                />
+
+                {/* Booking Progress Stepper */}
+                {selectedEvent && (
+                  <Card sx={{ mb: 3 }}>
+                    <CardContent>
+                      <Stepper activeStep={bookingStep} alternativeLabel>
+                        {steps.map((label) => (
+                          <Step key={label}>
+                            <StepLabel>{label}</StepLabel>
+                          </Step>
+                        ))}
+                      </Stepper>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {loadingEvents && (<Stack gap={1} mb={2}><Skeleton variant="rounded" height={36} /><Skeleton variant="rounded" height={36} width="80%" /><Skeleton variant="rounded" height={36} width="60%" /></Stack>)}
+                {eventsError && <Alert severity="error">{eventsError}</Alert>}
+                
+                {/* Results Summary */}
+                {events.length > 0 && !showPassengerForm && !showBookingSummary && (
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="h6" gutterBottom>
+                      Found {events.length} train(s)
+                    </Typography>
+                  </Box>
+                )}
+
+                {/* Train Results */}
+                {!showPassengerForm && !showBookingSummary && (
+                  <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 2, mb: 2 }}>
+                    {events.filter(ev => !classType || (ev.classType || '').toUpperCase() === classType.toUpperCase()).map((ev) => (
+                      <EnhancedTrainCard
+                        key={ev.id}
+                        train={ev}
+                        isSelected={selectedEvent?.id === ev.id}
+                        onSelect={setSelectedEvent}
+                        onViewDetails={handleViewTrainDetails}
+                      />
+                    ))}
+                  </Box>
+                )}
+
+                {/* Passenger Details Form */}
+                {showPassengerForm && selectedEvent && (
+                  <PassengerDetailsForm
+                    numberOfSeats={selectedSeatIds.length}
+                    onPassengersChange={handlePassengersChange}
+                    passengers={passengers}
+                  />
+                )}
+
+                {/* Booking Summary */}
+                {showBookingSummary && selectedEvent && (
+                  <BookingSummary
+                    train={selectedEvent}
+                    selectedSeats={seats.filter(s => selectedSeatIds.includes(s.id)).map(s => ({
+                      id: s.id,
+                      rowLabel: s.rowLabel,
+                      seatNumber: s.seatNumber,
+                      coachCode: s.coach?.code || 'N/A',
+                      classType: s.coach?.classType || 'N/A'
+                    }))}
+                    passengers={passengers}
+                    journeyDate={journeyDate}
+                    onProceedToPayment={handleProceedToPayment}
+                    onAddToWaitlist={handleAddToWaitlist}
+                  />
+                )}
+
+                {/* Train Selection and Seat Booking */}
+                {selectedEvent && !showPassengerForm && !showBookingSummary && (
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h6" fontWeight={700} gutterBottom>{selectedEvent.trainNumber ? `${selectedEvent.trainNumber} — ${selectedEvent.name}` : selectedEvent.name}</Typography>
+                      <Typography variant="body2" color="text.secondary" gutterBottom>{(selectedEvent.source || selectedEvent.venue)} → {selectedEvent.destination || 'Destination'} • Class: {selectedEvent.classType || 'General'}</Typography>
+                      {selectedEvent.description && <Typography variant="body2" gutterBottom>{selectedEvent.description}</Typography>}
+                      
+                      <Stack direction="row" spacing={2} alignItems="center" sx={{ my: 1 }}>
+                        <Chip color="success" variant="outlined" label="Selected" />
+                        <Chip variant="outlined" label="Unavailable" />
+                      </Stack>
+                      
+                      <Typography variant="body2" sx={{ mb: 1 }}>Price: ₹{selectedEvent.seatPrice.toFixed(2)} | Selected: {selectedSeatIds.length} | Total: ₹{total.toFixed(2)}</Typography>
+
+                      {coachesError && <Alert severity="error">{coachesError}</Alert>}
+                      {seatsError && <Alert severity="error">{seatsError}</Alert>}
+                      
+                      <Box sx={{ mb: 1, overflowX: 'auto' }}>
+                        <Stack direction="row" spacing={1}>
+                          {coaches.map(c => (
+                            <Button key={c.id} variant={selectedCoachId === c.id ? 'contained' : 'outlined'} onClick={() => setSelectedCoachId(c.id)}>
+                              {c.code} • {c.classType} • {c.available}/{c.total}
+                            </Button>
+                          ))}
+                        </Stack>
+                      </Box>
+                      
+                      <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
+                        <Chip size="small" color="primary" label={`AC: ${coaches.filter(c => classCategoryOf(c.classType) === 'AC').reduce((s, c) => s + c.available, 0)}`} />
+                        <Chip size="small" label={`Sleeper: ${coaches.filter(c => classCategoryOf(c.classType) === 'Sleeper').reduce((s, c) => s + c.available, 0)}`} />
+                        <Chip size="small" label={`General: ${coaches.filter(c => classCategoryOf(c.classType) === 'General').reduce((s, c) => s + c.available, 0)}`} />
+                        {coaches.length === 0 && <Chip size="small" color="warning" label="Showing seats for entire train (no coach data)" />}
+                      </Stack>
+
+                      {loadingSeats && (<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(56px, 1fr))', gap: 1 }}>{Array.from({ length: 24 }).map((_, i) => (<Skeleton key={i} variant="rounded" height={40} />))}</Box>)}
+                      
+                      <Box className="fade-up" sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(56px, 1fr))', gap: 1, mb: 2 }}>
+                        {seats.map((s) => {
+                          const disabled = s.status !== 'AVAILABLE';
+                          const active = selectedSeatIds.includes(s.id);
+                          return (
+                            <Button key={s.id} fullWidth variant={active ? 'contained' : 'outlined'} color={active ? 'success' : 'inherit'} disabled={disabled} sx={{ minWidth: 0, px: 0 }} onClick={() => toggleSeat(s.id)}>
+                              {formatSeat(s)}
+                            </Button>
+                          );
+                        })}
+                      </Box>
+
+                      <Divider sx={{ my: 1 }} />
+
+                      {/* Customer Details */}
+                      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems={{ xs: 'stretch', sm: 'center' }} sx={{ mb: 2 }}>
+                        <TextField label="Name" value={customer.name} onChange={(e) => setCustomer({ ...customer, name: e.target.value })} fullWidth />
+                        <TextField label="Email" type="email" value={customer.email} onChange={(e) => setCustomer({ ...customer, email: e.target.value })} fullWidth />
+                        <TextField label="Phone" value={customer.phone} onChange={(e) => setCustomer({ ...customer, phone: e.target.value })} fullWidth />
+                      </Stack>
+
+                      {/* Action Buttons */}
+                      <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+                        <Button
+                          variant="contained"
+                          onClick={handleProceedToPassengerDetails}
+                          disabled={selectedSeatIds.length === 0}
+                          size="large"
+                          sx={{ minWidth: 200 }}
+                        >
+                          Continue to Passenger Details ({selectedSeatIds.length} seats)
+                        </Button>
+                        
+                        <Button
+                          variant="outlined"
+                          onClick={resetBookingFlow}
+                          size="large"
+                        >
+                          Reset Selection
+                        </Button>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                )}
+              </>
+            )}
+
+            {/* Back to Dashboard Button */}
+            {!showDashboard && (
+              <Box sx={{ textAlign: 'center', mt: 4 }}>
+                <Button
+                  variant="outlined"
+                  onClick={() => setShowDashboard(true)}
+                  startIcon={<TrainIcon />}
+                  size="large"
+                >
+                  Back to Dashboard
+                </Button>
               </Box>
-              <TextField label="Class (e.g. 3A, SL)" value={classType} onChange={(e) => setClassType(e.target.value)} sx={{ minWidth: { xs: '100%', md: 160 } }} />
-              <TextField label="Search trains or stations" value={query} onChange={(e) => setQuery(e.target.value)} sx={{ minWidth: { xs: '100%', md: 240 }, flex: 1 }} />
-            </Stack>
-          ) : (
-            // Advanced Search
-            <AdvancedTrainSearch
-              onSearch={handleAdvancedSearch}
-              onClear={handleClearSearch}
-              filters={searchFilters}
-            />
-          )}
-        </CardContent>
-      </Card>
+            )}
+          </Container>
 
-      {/* Booking Progress Stepper */}
-      {selectedEvent && (
-        <Card sx={{ mb: 2 }}>
-          <CardContent>
-            <Stepper activeStep={bookingStep} alternativeLabel>
-              {steps.map((label) => (
-                <Step key={label}>
-                  <StepLabel>{label}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-          </CardContent>
-        </Card>
-      )}
-
-      {loadingEvents && (<Stack gap={1} mb={2}><Skeleton variant="rounded" height={36} /><Skeleton variant="rounded" height={36} width="80%" /><Skeleton variant="rounded" height={36} width="60%" /></Stack>)}
-      {eventsError && <Alert severity="error">{eventsError}</Alert>}
-      
-      {/* Results Summary */}
-      {events.length > 0 && !showPassengerForm && !showBookingSummary && (
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="h6" gutterBottom>
-            Found {events.length} train(s)
-          </Typography>
+          {toast && (<Box position="fixed" right={16} bottom={16}><Alert severity="info" onClose={() => setToast(null)}>{toast}</Alert></Box>)}
+          <Confetti fire={confetti} />
         </Box>
-      )}
-
-      {/* Train Results */}
-      {!showPassengerForm && !showBookingSummary && (
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 2, mb: 2 }}>
-          {events.filter(ev => !classType || (ev.classType || '').toUpperCase() === classType.toUpperCase()).map((ev) => (
-            <EnhancedTrainCard
-              key={ev.id}
-              train={ev}
-              isSelected={selectedEvent?.id === ev.id}
-              onSelect={setSelectedEvent}
-              onViewDetails={handleViewTrainDetails}
-            />
-          ))}
-        </Box>
-      )}
-
-      {/* Passenger Details Form */}
-      {showPassengerForm && selectedEvent && (
-        <PassengerDetailsForm
-          numberOfSeats={selectedSeatIds.length}
-          onPassengersChange={handlePassengersChange}
-          passengers={passengers}
-        />
-      )}
-
-      {/* Booking Summary */}
-      {showBookingSummary && selectedEvent && (
-        <BookingSummary
-          train={selectedEvent}
-          selectedSeats={seats.filter(s => selectedSeatIds.includes(s.id)).map(s => ({
-            id: s.id,
-            rowLabel: s.rowLabel,
-            seatNumber: s.seatNumber,
-            coachCode: s.coach?.code || 'N/A',
-            classType: s.coach?.classType || 'N/A'
-          }))}
-          passengers={passengers}
-          journeyDate={journeyDate}
-          onProceedToPayment={handleProceedToPayment}
-          onAddToWaitlist={handleAddToWaitlist}
-        />
-      )}
-
-      {/* Train Selection and Seat Booking */}
-      {selectedEvent && !showPassengerForm && !showBookingSummary && (
-        <Card>
-          <CardContent>
-            <Typography variant="h6" fontWeight={700} gutterBottom>{selectedEvent.trainNumber ? `${selectedEvent.trainNumber} — ${selectedEvent.name}` : selectedEvent.name}</Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>{(selectedEvent.source || selectedEvent.venue)} → {selectedEvent.destination || 'Destination'} • Class: {selectedEvent.classType || 'General'}</Typography>
-            {selectedEvent.description && <Typography variant="body2" gutterBottom>{selectedEvent.description}</Typography>}
-            
-            <Stack direction="row" spacing={2} alignItems="center" sx={{ my: 1 }}>
-              <Chip color="success" variant="outlined" label="Selected" />
-              <Chip variant="outlined" label="Unavailable" />
-            </Stack>
-            
-            <Typography variant="body2" sx={{ mb: 1 }}>Price: ₹{selectedEvent.seatPrice.toFixed(2)} | Selected: {selectedSeatIds.length} | Total: ₹{total.toFixed(2)}</Typography>
-
-            {coachesError && <Alert severity="error">{coachesError}</Alert>}
-            {seatsError && <Alert severity="error">{seatsError}</Alert>}
-            
-            <Box sx={{ mb: 1, overflowX: 'auto' }}>
-              <Stack direction="row" spacing={1}>
-                {coaches.map(c => (
-                  <Button key={c.id} variant={selectedCoachId === c.id ? 'contained' : 'outlined'} onClick={() => setSelectedCoachId(c.id)}>
-                    {c.code} • {c.classType} • {c.available}/{c.total}
-                  </Button>
-                ))}
-              </Stack>
-            </Box>
-            
-            <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
-              <Chip size="small" color="primary" label={`AC: ${coaches.filter(c => classCategoryOf(c.classType) === 'AC').reduce((s, c) => s + c.available, 0)}`} />
-              <Chip size="small" label={`Sleeper: ${coaches.filter(c => classCategoryOf(c.classType) === 'Sleeper').reduce((s, c) => s + c.available, 0)}`} />
-              <Chip size="small" label={`General: ${coaches.filter(c => classCategoryOf(c.classType) === 'General').reduce((s, c) => s + c.available, 0)}`} />
-              {coaches.length === 0 && <Chip size="small" color="warning" label="Showing seats for entire train (no coach data)" />}
-            </Stack>
-
-            {loadingSeats && (<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(56px, 1fr))', gap: 1 }}>{Array.from({ length: 24 }).map((_, i) => (<Skeleton key={i} variant="rounded" height={40} />))}</Box>)}
-            
-            <Box className="fade-up" sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(56px, 1fr))', gap: 1, mb: 2 }}>
-              {seats.map((s) => {
-                const disabled = s.status !== 'AVAILABLE';
-                const active = selectedSeatIds.includes(s.id);
-                return (
-                  <Button key={s.id} fullWidth variant={active ? 'contained' : 'outlined'} color={active ? 'success' : 'inherit'} disabled={disabled} sx={{ minWidth: 0, px: 0 }} onClick={() => toggleSeat(s.id)}>
-                    {formatSeat(s)}
-                  </Button>
-                );
-              })}
-            </Box>
-
-            <Divider sx={{ my: 1 }} />
-
-            {/* Customer Details */}
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems={{ xs: 'stretch', sm: 'center' }} sx={{ mb: 2 }}>
-              <TextField label="Name" value={customer.name} onChange={(e) => setCustomer({ ...customer, name: e.target.value })} fullWidth />
-              <TextField label="Email" type="email" value={customer.email} onChange={(e) => setCustomer({ ...customer, email: e.target.value })} fullWidth />
-              <TextField label="Phone" value={customer.phone} onChange={(e) => setCustomer({ ...customer, phone: e.target.value })} fullWidth />
-            </Stack>
-
-            {/* Action Buttons */}
-            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
-              <Button
-                variant="contained"
-                onClick={handleProceedToPassengerDetails}
-                disabled={selectedSeatIds.length === 0}
-                size="large"
-                sx={{ minWidth: 200 }}
-              >
-                Continue to Passenger Details ({selectedSeatIds.length} seats)
-              </Button>
-              
-              <Button
-                variant="outlined"
-                onClick={resetBookingFlow}
-                size="large"
-              >
-                Reset Selection
-              </Button>
-            </Box>
-          </CardContent>
-        </Card>
-      )}
-
-      {toast && (<Box position="fixed" right={16} bottom={16}><Alert severity="info" onClose={() => setToast(null)}>{toast}</Alert></Box>)}
-      <Confetti fire={confetti} />
-    </Box>
+      </LocalizationProvider>
+    </ThemeProvider>
   );
 }
 
