@@ -130,8 +130,19 @@ function App() {
 			.then((data) => {
 				if (!active) return;
 				setCoaches(data);
-				if (data.length > 0 && !data.find(c => c.id === selectedCoachId)) {
-					setSelectedCoachId(data[0].id);
+				if (data.length > 0) {
+					if (!data.find(c => c.id === selectedCoachId)) {
+						setSelectedCoachId(data[0].id);
+					}
+				} else {
+					// Fallback: no coaches defined; load seats by event
+					setSelectedCoachId(null);
+					setLoadingSeats(true);
+					setSeatsError(null);
+					apiGet<SeatDto[]>(`/api/events/${selectedEvent.id}/seats`)
+						.then((ss) => { if (active) setSeats(ss); })
+						.catch((err) => { if (active) setSeatsError(err.message || 'Failed to load seats'); })
+						.finally(() => { if (active) setLoadingSeats(false); });
 				}
 			})
 			.catch((err) => { if (active) setCoachesError(err.message || 'Failed to load coaches'); })
@@ -313,6 +324,7 @@ function App() {
 							<Chip size="small" color="primary" label={`AC: ${coaches.filter(c => classCategoryOf(c.classType) === 'AC').reduce((s, c) => s + c.available, 0)}`} />
 							<Chip size="small" label={`Sleeper: ${coaches.filter(c => classCategoryOf(c.classType) === 'Sleeper').reduce((s, c) => s + c.available, 0)}`} />
 							<Chip size="small" label={`General: ${coaches.filter(c => classCategoryOf(c.classType) === 'General').reduce((s, c) => s + c.available, 0)}`} />
+							{coaches.length === 0 && <Chip size="small" color="warning" label="Showing seats for entire train (no coach data)" />}
 						</Stack>
 
 						{loadingSeats && (
