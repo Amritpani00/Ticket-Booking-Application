@@ -28,6 +28,16 @@ interface SeatDto {
 	status: 'AVAILABLE' | 'RESERVED' | 'BOOKED';
 }
 
+interface CoachDto {
+	id: number;
+	code: string;
+	classType: string;
+	available: number;
+	reserved: number;
+	booked: number;
+	total: number;
+}
+
 interface CreateBookingResponse {
 	bookingId: number;
 	orderId: string;
@@ -47,6 +57,15 @@ function classLabelToAcType(classType?: string) {
 	return 'Non-AC';
 }
 
+function classCategoryOf(classType?: string) {
+	if (!classType) return 'General';
+	const t = classType.toUpperCase();
+	if (['1A','2A','3A','EC','CC'].includes(t)) return 'AC';
+	if (['SL'].includes(t)) return 'Sleeper';
+	if (['GEN','2S'].includes(t)) return 'General';
+	return 'General';
+}
+
 function App() {
 	const [query, setQuery] = useState('');
 	const [events, setEvents] = useState<EventDto[]>([]);
@@ -61,6 +80,11 @@ function App() {
 	const [creating, setCreating] = useState(false);
 	const [toast, setToast] = useState<string | null>(null);
 	const navigate = useNavigate();
+
+	const [coaches, setCoaches] = useState<CoachDto[]>([]);
+	const [loadingCoaches, setLoadingCoaches] = useState(false);
+	const [coachesError, setCoachesError] = useState<string | null>(null);
+	const [selectedCoachId, setSelectedCoachId] = useState<number | null>(null);
 
 	const [source, setSource] = useState('');
 	const [destination, setDestination] = useState('');
@@ -89,16 +113,51 @@ function App() {
 	}, [query, source, destination]);
 
 	useEffect(() => {
+		const params = new URLSearchParams(window.location.search);
+		const eventIdParam = params.get('eventId');
+		if (eventIdParam && events.length > 0) {
+			const found = events.find(e => String(e.id) === eventIdParam);
+			if (found) setSelectedEvent(found);
+		}
+	}, [events]);
+
+	useEffect(() => {
 		if (!selectedEvent) return;
+		let active = true;
+		setLoadingCoaches(true);
+		setCoachesError(null);
+		apiGet<CoachDto[]>(`/api/events/${selectedEvent.id}/coaches`)
+			.then((data) => {
+				if (!active) return;
+				setCoaches(data);
+				if (data.length > 0 && !data.find(c => c.id === selectedCoachId)) {
+					setSelectedCoachId(data[0].id);
+				}
+			})
+			.catch((err) => { if (active) setCoachesError(err.message || 'Failed to load coaches'); })
+			.finally(() => { if (active) setLoadingCoaches(false); });
+		return () => { active = false; };
+	}, [selectedEvent?.id]);
+
+	useEffect(() => {
+		if (!selectedCoachId) return;
 		let active = true;
 		setLoadingSeats(true);
 		setSeatsError(null);
-		apiGet<SeatDto[]>(`/api/events/${selectedEvent.id}/seats`)
+		apiGet<SeatDto[]>(`/api/events/coaches/${selectedCoachId}/seats`)
 			.then((data) => { if (active) setSeats(data); })
 			.catch((err) => { if (active) setSeatsError(err.message || 'Failed to load seats'); })
 			.finally(() => { if (active) setLoadingSeats(false); });
 		return () => { active = false; };
-	}, [selectedEvent?.id]);
+	}, [selectedCoachId]);
+
+	useEffect(() => {
+		if (!selectedCoachId) return;
+		const timer = setInterval(() => {
+			apiGet<SeatDto[]>(`/api/events/coaches/${selectedCoachId}/seats`).then(setSeats).catch(() => {});
+		}, 5000);
+		return () => clearInterval(timer);
+	}, [selectedCoachId]);
 
 	const total = useMemo(() => {
 		if (!selectedEvent) return 0;
@@ -239,6 +298,23 @@ function App() {
 							Price: ₹{selectedEvent.seatPrice.toFixed(2)} | Selected: {selectedSeatIds.length} | Total: ₹{total.toFixed(2)}
 						</Typography>
 
+						{coachesError && <Alert severity="error">{coachesError}</Alert>}
+						{seatsError && <Alert severity="error">{seatsError}</Alert>}
+						<Box sx={{ mb: 1, overflowX: 'auto' }}>
+							<Stack direction="row" spacing={1}>
+								{coaches.map(c => (
+									<Button key={c.id} variant={selectedCoachId === c.id ? 'contained' : 'outlined'} onClick={() => setSelectedCoachId(c.id)}>
+										{c.code} • {c.classType} • {c.available}/{c.total}
+									</Button>
+								))}
+							</Stack>
+						</Box>
+						<Stack direction="row" spacing={1} sx={{ mb: 1 }}>
+							<Chip size="small" color="primary" label={`AC: ${coaches.filter(c => classCategoryOf(c.classType) === 'AC').reduce((s, c) => s + c.available, 0)}`} />
+							<Chip size="small" label={`Sleeper: ${coaches.filter(c => classCategoryOf(c.classType) === 'Sleeper').reduce((s, c) => s + c.available, 0)}`} />
+							<Chip size="small" label={`General: ${coaches.filter(c => classCategoryOf(c.classType) === 'General').reduce((s, c) => s + c.available, 0)}`} />
+						</Stack>
+
 						{loadingSeats && (
 							<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(56px, 1fr))', gap: 1 }}>
 								{Array.from({ length: 24 }).map((_, i) => (
@@ -246,7 +322,6 @@ function App() {
 								))}
 							</Box>
 						)}
-						{seatsError && <Alert severity="error">{seatsError}</Alert>}
 						<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(56px, 1fr))', gap: 1, mb: 2 }}>
 							{seats.map((s) => {
 								const disabled = s.status !== 'AVAILABLE';

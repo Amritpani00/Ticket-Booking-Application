@@ -13,7 +13,11 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
 
     List<Seat> findByEvent_Id(Long eventId);
 
+    List<Seat> findByCoach_Id(Long coachId);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select s from Seat s where s.id in ?1")
     List<Seat> lockSeatsByIds(Collection<Long> seatIds);
+
+    long countByCoach_IdAndStatus(Long coachId, Seat.Status status);
 }

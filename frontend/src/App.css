@@ -27,6 +27,18 @@
   }
 }
 
+/* Simple animated train */
+@keyframes train-move {
+  0% { transform: translateX(-10%); }
+  100% { transform: translateX(110%); }
+}
+
+.train-anim {
+  display: inline-block;
+  font-size: 28px;
+  animation: train-move 6s linear infinite;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;
