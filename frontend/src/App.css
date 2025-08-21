@@ -63,6 +63,14 @@
 @keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 .bouncy-cta { animation: bounce-slow 1.6s ease-in-out infinite; }
 
+/* Animated stations */
+.station-marker { width: 10px; height: 10px; background: #16a34a; border-radius: 50%; box-shadow: 0 0 0 6px rgba(22,163,74,0.15), 0 0 10px rgba(22,163,74,0.4); animation: pulse 2s ease-in-out infinite; }
+.station-line { flex: 1; height: 2px; background: linear-gradient(90deg, rgba(34,197,94,0.2), rgba(59,130,246,0.2)); }
+
+/* Timeline glow */
+.timeline-glow { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: radial-gradient(closest-side, rgba(14,165,233,0.35), transparent) left center/20% 100% no-repeat, linear-gradient(90deg, rgba(14,165,233,0.15), rgba(59,130,246,0.15)); animation: glow-scroll 3s linear infinite; }
+@keyframes glow-scroll { 0% { background-position: 0% 0; } 100% { background-position: 120% 0; } }
+
 @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { apiGet } from '../api';
 import { Alert, Box, Card, CardContent, Skeleton, Stack, Typography } from '@mui/material';
+import AnimatedStations from '../components/AnimatedStations';
+import TimelineGlow from '../components/TimelineGlow';
 
 interface BookingSummary { bookingId: number; trainName: string; trainNumber?: string; source?: string; destination?: string; status: string; totalAmount: number; createdAt: string; }
 
@@ -22,6 +24,8 @@ export default function History() {
       <Card sx={{ mb: 2 }}>
         <CardContent>
           <Typography variant="h5" fontWeight={700}>Booking History</Typography>
+          <AnimatedStations />
+          <TimelineGlow />
         </CardContent>
       </Card>
       {loading && <Skeleton variant="rectangular" height={40} />}

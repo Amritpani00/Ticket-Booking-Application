@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { apiGet } from '../api';
 import { Alert, Box, Card, CardContent, FormControl, InputLabel, MenuItem, Select, Skeleton, Stack, TextField, Typography } from '@mui/material';
+import AnimatedStations from '../components/AnimatedStations';
+import TimelineGlow from '../components/TimelineGlow';
 
 interface EventItem { id: number; name: string; trainNumber?: string; source?: string; destination?: string; seatPrice: number; }
 
@@ -30,6 +32,8 @@ export default function Fare() {
       <Card sx={{ mb: 2 }}>
         <CardContent>
           <Typography variant="h5" fontWeight={700}>Fare Enquiry</Typography>
+          <AnimatedStations />
+          <TimelineGlow />
         </CardContent>
       </Card>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ mb: 2 }}>
