@@ -14,3 +14,15 @@ export function authHeaders() {
 export function clearToken() {
 	localStorage.removeItem('token');
 }
+
+export function getRole(): 'ADMIN' | 'USER' | null {
+  const t = getToken();
+  if (!t) return null;
+  const payload = t.split('.')[1];
+  try {
+    const json = JSON.parse(atob(payload));
+    return (json.role as 'ADMIN' | 'USER') || null;
+  } catch {
+    return null;
+  }
+}

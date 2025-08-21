@@ -14,6 +14,8 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 public class AppUser {
 
+    public enum Role { USER, ADMIN }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,4 +31,9 @@ public class AppUser {
 
     @Column(nullable = false)
     private OffsetDateTime createdAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private Role role = Role.USER;
 }

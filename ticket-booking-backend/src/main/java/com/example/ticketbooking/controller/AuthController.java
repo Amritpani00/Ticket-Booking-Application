@@ -10,6 +10,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
@@ -44,14 +46,26 @@ public class AuthController {
                 .createdAt(OffsetDateTime.now())
                 .build();
         userRepository.save(user);
-        String token = jwtService.generateToken(user.getEmail(), Map.of("name", user.getName()));
-        return ResponseEntity.ok(AuthDtos.AuthResponse.builder().token(token).name(user.getName()).email(user.getEmail()).build());
+        String token = jwtService.generateToken(user.getEmail(), Map.of("name", user.getName(), "role", user.getRole().name()));
+        return ResponseEntity.ok(AuthDtos.AuthResponse.builder().token(token).name(user.getName()).email(user.getEmail()).role(user.getRole().name()).build());
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody AuthDtos.LoginRequest request) {
         Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        String token = jwtService.generateToken(request.getEmail(), Map.of());
-        return ResponseEntity.ok(AuthDtos.AuthResponse.builder().token(token).name(request.getEmail()).email(request.getEmail()).build());
+        AppUser user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+        String token = jwtService.generateToken(request.getEmail(), Map.of("name", user.getName(), "role", user.getRole().name()));
+        return ResponseEntity.ok(AuthDtos.AuthResponse.builder().token(token).name(user.getName()).email(user.getEmail()).role(user.getRole().name()).build());
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> me(@AuthenticationPrincipal User principal) {
+        if (principal == null) return ResponseEntity.status(401).build();
+        AppUser user = userRepository.findByEmail(principal.getUsername()).orElseThrow();
+        return ResponseEntity.ok(Map.of(
+                "name", user.getName(),
+                "email", user.getEmail(),
+                "role", user.getRole().name()
+        ));
     }
 }
