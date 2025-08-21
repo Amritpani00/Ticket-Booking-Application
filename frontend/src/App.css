@@ -39,6 +39,20 @@
   animation: train-move 6s linear infinite;
 }
 
+/* Clouds */
+.cloud { position: absolute; top: 8px; width: 80px; height: 28px; background: #e5f3ff; border-radius: 50px; box-shadow: 20px 10px 0 10px #e5f3ff, 50px 8px 0 6px #e5f3ff; opacity: 0.9; }
+@keyframes cloud-move { 0% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+.cloud-1 { left: -80px; animation: cloud-move 22s linear infinite; }
+.cloud-2 { top: 18px; left: -160px; transform: scale(1.2); animation: cloud-move 28s linear infinite; }
+.cloud-3 { top: 2px; left: -120px; transform: scale(0.9); animation: cloud-move 18s linear infinite; }
+
+/* Pulse icons */
+@keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); opacity: 0.8; } }
+.pulse-icon { display: inline-block; font-size: 18px; animation: pulse 1.8s ease-in-out infinite; }
+.pulse-icon:nth-of-type(2) { animation-delay: 0.2s; }
+.pulse-icon:nth-of-type(3) { animation-delay: 0.4s; }
+.pulse-icon:nth-of-type(4) { animation-delay: 0.6s; }
+
 @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;

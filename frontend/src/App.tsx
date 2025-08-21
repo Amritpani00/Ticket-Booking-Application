@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { apiGet, apiPost } from './api';
 import { getToken } from './auth';
 import { Alert, Box, Button, Card, CardActionArea, CardContent, Chip, Divider, Skeleton, Stack, TextField, Typography } from '@mui/material';
+import AnimatedClouds from './components/AnimatedClouds';
+import PulseIcons from './components/PulseIcons';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 
@@ -248,6 +250,8 @@ function App() {
 					<Typography variant="h5" fontWeight={700} gutterBottom>
 						IRCTC-like Train Booking
 					</Typography>
+					<AnimatedClouds />
+					<PulseIcons />
 					<Stack direction={{ xs: 'column', md: 'row' }} spacing={1} useFlexGap flexWrap="wrap" alignItems="center">
 						<TextField label="From (source)" value={source} onChange={(e) => setSource(e.target.value)} sx={{ minWidth: { xs: '100%', md: 220 }, flex: 1 }} />
 						<TextField label="To (destination)" value={destination} onChange={(e) => setDestination(e.target.value)} sx={{ minWidth: { xs: '100%', md: 220 }, flex: 1 }} />
