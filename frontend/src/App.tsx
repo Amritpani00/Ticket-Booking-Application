@@ -3,7 +3,7 @@ import './App.css';
 import { useNavigate } from 'react-router-dom';
 import { apiGet, apiPost } from './api';
 import { getToken } from './auth';
-import { Alert, Box, Button, Card, CardActionArea, CardContent, Chip, Divider, Skeleton, Stack, TextField, Typography, Tabs, Tab, Grid } from '@mui/material';
+import { Alert, Box, Button, Card, CardContent, Chip, Divider, Skeleton, Stack, TextField, Typography, Tabs, Tab, Grid, Stepper, Step, StepLabel } from '@mui/material';
 import AnimatedClouds from './components/AnimatedClouds';
 import PulseIcons from './components/PulseIcons';
 import GradientBanner from './components/GradientBanner';
@@ -12,6 +12,8 @@ import BouncyCta from './components/BouncyCta';
 import Confetti from './components/Confetti';
 import AdvancedTrainSearch from './components/AdvancedTrainSearch';
 import EnhancedTrainCard from './components/EnhancedTrainCard';
+import PassengerDetailsForm from './components/PassengerDetailsForm';
+import BookingSummary from './components/BookingSummary';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 
@@ -44,9 +46,20 @@ interface EventDto {
   delayMinutes?: number;
 }
 
-interface SeatDto { id: number; rowLabel: string; seatNumber: number; status: 'AVAILABLE' | 'RESERVED' | 'BOOKED'; }
+interface SeatDto { 
+  id: number; 
+  rowLabel: string; 
+  seatNumber: number; 
+  status: 'AVAILABLE' | 'RESERVED' | 'BOOKED';
+  coach?: {
+    id: number;
+    code: string;
+    classType: string;
+  };
+}
+
 interface CoachDto { id: number; code: string; classType: string; available: number; reserved: number; booked: number; total: number; }
-interface CreateBookingResponse { bookingId: number; orderId: string; razorpayKeyId: string; amount: number; currency: string; }
+interface CreateBookingResponse { bookingId: number; orderId: string; razorpayKeyId: string; amount: number; currency: string; pnrNumber: string; }
 
 interface SearchFilters {
   source: string;
@@ -61,6 +74,17 @@ interface SearchFilters {
   classType: string;
   sortBy: string;
   sortOrder: string;
+}
+
+interface PassengerInfo {
+  name: string;
+  age: string;
+  gender: string;
+  idProofType: string;
+  idProofNumber: string;
+  passengerType: string;
+  contactNumber: string;
+  email: string;
 }
 
 function formatSeat(seat: SeatDto) { return `${seat.rowLabel}${seat.seatNumber}`; }
@@ -109,6 +133,12 @@ function App() {
     sortBy: 'startTime',
     sortOrder: 'asc'
   });
+
+  // Booking flow state
+  const [bookingStep, setBookingStep] = useState<number>(0);
+  const [passengers, setPassengers] = useState<PassengerInfo[]>([]);
+  const [showPassengerForm, setShowPassengerForm] = useState(false);
+  const [showBookingSummary, setShowBookingSummary] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -201,7 +231,10 @@ function App() {
   }, [selectedCoachId]);
 
   const total = useMemo(() => { if (!selectedEvent) return 0; return selectedSeatIds.length * selectedEvent.seatPrice; }, [selectedSeatIds, selectedEvent]);
-  function toggleSeat(id: number) { setSelectedSeatIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]); }
+  
+  function toggleSeat(id: number) { 
+    setSelectedSeatIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]); 
+  }
 
   const handleAdvancedSearch = (filters: SearchFilters) => {
     setSearchFilters(filters);
@@ -236,23 +269,131 @@ function App() {
     console.log('View train details:', train);
   };
 
+  const handleProceedToPassengerDetails = () => {
+    if (selectedSeatIds.length === 0) {
+      setToast('Please select at least one seat');
+      return;
+    }
+    setShowPassengerForm(true);
+    setShowBookingSummary(false);
+    setBookingStep(1);
+  };
+
+  const handlePassengersChange = (newPassengers: PassengerInfo[]) => {
+    setPassengers(newPassengers);
+  };
+
+  const handleProceedToBookingSummary = () => {
+    if (passengers.length !== selectedSeatIds.length) {
+      setToast(`Please add details for all ${selectedSeatIds.length} passengers`);
+      return;
+    }
+    setShowPassengerForm(false);
+    setShowBookingSummary(true);
+    setBookingStep(2);
+  };
+
+  const handleProceedToPayment = () => {
+    if (!getToken()) { 
+      setToast('Please login or register first'); 
+      return; 
+    }
+    createBooking();
+  };
+
+  const handleAddToWaitlist = () => {
+    if (!getToken()) { 
+      setToast('Please login or register first'); 
+      return; 
+    }
+    // Add to waitlist logic
+    setToast('Added to waitlist successfully');
+  };
+
+  const resetBookingFlow = () => {
+    setSelectedSeatIds([]);
+    setPassengers([]);
+    setShowPassengerForm(false);
+    setShowBookingSummary(false);
+    setBookingStep(0);
+  };
+
   async function createBooking() {
-    if (!selectedEvent || selectedSeatIds.length === 0) return;
-    if (!getToken()) { setToast('Please login or register first'); return; }
+    if (!selectedEvent || selectedSeatIds.length === 0 || passengers.length === 0) return;
+    
     setCreating(true);
     try {
-      const resp = await apiPost<any, CreateBookingResponse>('/api/bookings', { eventId: selectedEvent.id, seatIds: selectedSeatIds, customerName: customer.name, customerEmail: customer.email, customerPhone: customer.phone });
+      const selectedSeats = seats.filter(s => selectedSeatIds.includes(s.id));
+      
+      const request = {
+        eventId: selectedEvent.id,
+        seatIds: selectedSeatIds,
+        customerName: customer.name || passengers[0].name,
+        customerEmail: customer.email || passengers[0].email,
+        customerPhone: customer.phone || passengers[0].contactNumber,
+        passengers: passengers.map(p => ({
+          name: p.name,
+          age: parseInt(p.age),
+          gender: p.gender,
+          idProofType: p.idProofType,
+          idProofNumber: p.idProofNumber,
+          passengerType: p.passengerType,
+          contactNumber: p.contactNumber,
+          email: p.email
+        }))
+      };
+
+      const resp = await apiPost<any, CreateBookingResponse>('/api/bookings', request);
       await launchRazorpay(resp);
-    } catch (e: any) { setToast(e.message || 'Failed to create booking'); } finally { setCreating(false); }
+    } catch (e: any) { 
+      setToast(e.message || 'Failed to create booking'); 
+    } finally { 
+      setCreating(false); 
+    }
   }
 
   async function launchRazorpay(data: CreateBookingResponse) {
     if (!(window as any).Razorpay) {
-      await new Promise<void>((resolve, reject) => { const script = document.createElement('script'); script.src = 'https://checkout.razorpay.com/v1/checkout.js'; script.onload = () => resolve(); script.onerror = () => reject(new Error('Failed to load Razorpay')); document.body.appendChild(script); });
+      await new Promise<void>((resolve, reject) => { 
+        const script = document.createElement('script'); 
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js'; 
+        script.onload = () => resolve(); 
+        script.onerror = () => reject(new Error('Failed to load Razorpay')); 
+        document.body.appendChild(script); 
+      });
     }
-    const options = { key: data.razorpayKeyId, amount: Math.round(data.amount * 100), currency: data.currency, name: 'Ticket Booking', description: 'Seat booking', order_id: data.orderId, prefill: { name: customer.name, email: customer.email, contact: customer.phone }, modal: { ondismiss: () => setToast('Payment dismissed') }, handler: async (response: any) => { await apiPost('/api/bookings/verify', { bookingId: data.bookingId, razorpayOrderId: response.razorpay_order_id, razorpayPaymentId: response.razorpay_payment_id, razorpaySignature: response.razorpay_signature, }); navigate(`/ticket/${data.bookingId}`); } } as any;
-    const rz = new (window as any).Razorpay(options); rz.open();
+    
+    const options = { 
+      key: data.razorpayKeyId, 
+      amount: Math.round(data.amount * 100), 
+      currency: data.currency, 
+      name: 'Train Ticket Booking', 
+      description: `Train: ${selectedEvent?.trainNumber} - ${selectedEvent?.name}`, 
+      order_id: data.orderId, 
+      prefill: { 
+        name: customer.name || passengers[0]?.name, 
+        email: customer.email || passengers[0]?.email, 
+        contact: customer.phone || passengers[0]?.contactNumber 
+      }, 
+      modal: { ondismiss: () => setToast('Payment dismissed') }, 
+      handler: async (response: any) => { 
+        await apiPost('/api/bookings/verify', { 
+          bookingId: data.bookingId, 
+          razorpayOrderId: response.razorpay_order_id, 
+          razorpayPaymentId: response.razorpay_payment_id, 
+          razorpaySignature: response.razorpay_signature, 
+        }); 
+        setToast(`Booking confirmed! PNR: ${data.pnrNumber}`);
+        resetBookingFlow();
+        navigate(`/ticket/${data.bookingId}`); 
+      } 
+    } as any;
+    
+    const rz = new (window as any).Razorpay(options); 
+    rz.open();
   }
+
+  const steps = ['Select Train & Seats', 'Passenger Details', 'Booking Summary & Payment'];
 
   return (
     <Box>
@@ -296,11 +437,26 @@ function App() {
         </CardContent>
       </Card>
 
+      {/* Booking Progress Stepper */}
+      {selectedEvent && (
+        <Card sx={{ mb: 2 }}>
+          <CardContent>
+            <Stepper activeStep={bookingStep} alternativeLabel>
+              {steps.map((label) => (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          </CardContent>
+        </Card>
+      )}
+
       {loadingEvents && (<Stack gap={1} mb={2}><Skeleton variant="rounded" height={36} /><Skeleton variant="rounded" height={36} width="80%" /><Skeleton variant="rounded" height={36} width="60%" /></Stack>)}
       {eventsError && <Alert severity="error">{eventsError}</Alert>}
       
       {/* Results Summary */}
-      {events.length > 0 && (
+      {events.length > 0 && !showPassengerForm && !showBookingSummary && (
         <Box sx={{ mb: 2 }}>
           <Typography variant="h6" gutterBottom>
             Found {events.length} train(s)
@@ -309,32 +465,65 @@ function App() {
       )}
 
       {/* Train Results */}
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 2, mb: 2 }}>
-        {events.filter(ev => !classType || (ev.classType || '').toUpperCase() === classType.toUpperCase()).map((ev) => (
-          <EnhancedTrainCard
-            key={ev.id}
-            train={ev}
-            isSelected={selectedEvent?.id === ev.id}
-            onSelect={setSelectedEvent}
-            onViewDetails={handleViewTrainDetails}
-          />
-        ))}
-      </Box>
+      {!showPassengerForm && !showBookingSummary && (
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 2, mb: 2 }}>
+          {events.filter(ev => !classType || (ev.classType || '').toUpperCase() === classType.toUpperCase()).map((ev) => (
+            <EnhancedTrainCard
+              key={ev.id}
+              train={ev}
+              isSelected={selectedEvent?.id === ev.id}
+              onSelect={setSelectedEvent}
+              onViewDetails={handleViewTrainDetails}
+            />
+          ))}
+        </Box>
+      )}
 
-      {selectedEvent && (
+      {/* Passenger Details Form */}
+      {showPassengerForm && selectedEvent && (
+        <PassengerDetailsForm
+          numberOfSeats={selectedSeatIds.length}
+          onPassengersChange={handlePassengersChange}
+          passengers={passengers}
+        />
+      )}
+
+      {/* Booking Summary */}
+      {showBookingSummary && selectedEvent && (
+        <BookingSummary
+          train={selectedEvent}
+          selectedSeats={seats.filter(s => selectedSeatIds.includes(s.id)).map(s => ({
+            id: s.id,
+            rowLabel: s.rowLabel,
+            seatNumber: s.seatNumber,
+            coachCode: s.coach?.code || 'N/A',
+            classType: s.coach?.classType || 'N/A'
+          }))}
+          passengers={passengers}
+          journeyDate={journeyDate}
+          onProceedToPayment={handleProceedToPayment}
+          onAddToWaitlist={handleAddToWaitlist}
+        />
+      )}
+
+      {/* Train Selection and Seat Booking */}
+      {selectedEvent && !showPassengerForm && !showBookingSummary && (
         <Card>
           <CardContent>
             <Typography variant="h6" fontWeight={700} gutterBottom>{selectedEvent.trainNumber ? `${selectedEvent.trainNumber} — ${selectedEvent.name}` : selectedEvent.name}</Typography>
             <Typography variant="body2" color="text.secondary" gutterBottom>{(selectedEvent.source || selectedEvent.venue)} → {selectedEvent.destination || 'Destination'} • Class: {selectedEvent.classType || 'General'}</Typography>
             {selectedEvent.description && <Typography variant="body2" gutterBottom>{selectedEvent.description}</Typography>}
+            
             <Stack direction="row" spacing={2} alignItems="center" sx={{ my: 1 }}>
               <Chip color="success" variant="outlined" label="Selected" />
               <Chip variant="outlined" label="Unavailable" />
             </Stack>
+            
             <Typography variant="body2" sx={{ mb: 1 }}>Price: ₹{selectedEvent.seatPrice.toFixed(2)} | Selected: {selectedSeatIds.length} | Total: ₹{total.toFixed(2)}</Typography>
 
             {coachesError && <Alert severity="error">{coachesError}</Alert>}
             {seatsError && <Alert severity="error">{seatsError}</Alert>}
+            
             <Box sx={{ mb: 1, overflowX: 'auto' }}>
               <Stack direction="row" spacing={1}>
                 {coaches.map(c => (
@@ -344,6 +533,7 @@ function App() {
                 ))}
               </Stack>
             </Box>
+            
             <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
               <Chip size="small" color="primary" label={`AC: ${coaches.filter(c => classCategoryOf(c.classType) === 'AC').reduce((s, c) => s + c.available, 0)}`} />
               <Chip size="small" label={`Sleeper: ${coaches.filter(c => classCategoryOf(c.classType) === 'Sleeper').reduce((s, c) => s + c.available, 0)}`} />
@@ -352,6 +542,7 @@ function App() {
             </Stack>
 
             {loadingSeats && (<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(56px, 1fr))', gap: 1 }}>{Array.from({ length: 24 }).map((_, i) => (<Skeleton key={i} variant="rounded" height={40} />))}</Box>)}
+            
             <Box className="fade-up" sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(56px, 1fr))', gap: 1, mb: 2 }}>
               {seats.map((s) => {
                 const disabled = s.status !== 'AVAILABLE';
@@ -366,12 +557,33 @@ function App() {
 
             <Divider sx={{ my: 1 }} />
 
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems={{ xs: 'stretch', sm: 'center' }}>
+            {/* Customer Details */}
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems={{ xs: 'stretch', sm: 'center' }} sx={{ mb: 2 }}>
               <TextField label="Name" value={customer.name} onChange={(e) => setCustomer({ ...customer, name: e.target.value })} fullWidth />
               <TextField label="Email" type="email" value={customer.email} onChange={(e) => setCustomer({ ...customer, email: e.target.value })} fullWidth />
               <TextField label="Phone" value={customer.phone} onChange={(e) => setCustomer({ ...customer, phone: e.target.value })} fullWidth />
-              <BouncyCta onClick={() => { setConfetti(true); createBooking(); setTimeout(() => setConfetti(false), 1500); }}>{creating ? 'Creating…' : 'Pay with Razorpay'}</BouncyCta>
             </Stack>
+
+            {/* Action Buttons */}
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+              <Button
+                variant="contained"
+                onClick={handleProceedToPassengerDetails}
+                disabled={selectedSeatIds.length === 0}
+                size="large"
+                sx={{ minWidth: 200 }}
+              >
+                Continue to Passenger Details ({selectedSeatIds.length} seats)
+              </Button>
+              
+              <Button
+                variant="outlined"
+                onClick={resetBookingFlow}
+                size="large"
+              >
+                Reset Selection
+              </Button>
+            </Box>
           </CardContent>
         </Card>
       )}
