@@ -9,6 +9,7 @@ import PulseIcons from './components/PulseIcons';
 import GradientBanner from './components/GradientBanner';
 import DottedLine from './components/DottedLine';
 import BouncyCta from './components/BouncyCta';
+import Confetti from './components/Confetti';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 
@@ -34,6 +35,7 @@ function App() {
   const [customer, setCustomer] = useState({ name: '', email: '', phone: '' });
   const [creating, setCreating] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [confetti, setConfetti] = useState(false);
   const navigate = useNavigate();
 
   const [coaches, setCoaches] = useState<CoachDto[]>([]);
@@ -161,7 +163,7 @@ function App() {
       {eventsError && <Alert severity="error">{eventsError}</Alert>}
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 2, mb: 2 }}>
         {events.filter(ev => !classType || (ev.classType || '').toUpperCase() === classType.toUpperCase()).map((ev) => (
-          <Card key={ev.id} variant={selectedEvent?.id === ev.id ? 'outlined' : undefined} sx={{ borderColor: selectedEvent?.id === ev.id ? 'primary.main' : undefined }}>
+          <Card key={ev.id} className="parallax-card" variant={selectedEvent?.id === ev.id ? 'outlined' : undefined} sx={{ borderColor: selectedEvent?.id === ev.id ? 'primary.main' : undefined }}>
             <CardActionArea onClick={() => setSelectedEvent(ev)}>
               <CardContent>
                 <Stack gap={0.5}>
@@ -211,7 +213,7 @@ function App() {
             </Stack>
 
             {loadingSeats && (<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(56px, 1fr))', gap: 1 }}>{Array.from({ length: 24 }).map((_, i) => (<Skeleton key={i} variant="rounded" height={40} />))}</Box>)}
-            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(56px, 1fr))', gap: 1, mb: 2 }}>
+            <Box className="fade-up" sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(56px, 1fr))', gap: 1, mb: 2 }}>
               {seats.map((s) => {
                 const disabled = s.status !== 'AVAILABLE';
                 const active = selectedSeatIds.includes(s.id);
@@ -229,13 +231,14 @@ function App() {
               <TextField label="Name" value={customer.name} onChange={(e) => setCustomer({ ...customer, name: e.target.value })} fullWidth />
               <TextField label="Email" type="email" value={customer.email} onChange={(e) => setCustomer({ ...customer, email: e.target.value })} fullWidth />
               <TextField label="Phone" value={customer.phone} onChange={(e) => setCustomer({ ...customer, phone: e.target.value })} fullWidth />
-              <BouncyCta onClick={createBooking}>{creating ? 'Creating…' : 'Pay with Razorpay'}</BouncyCta>
+              <BouncyCta onClick={() => { setConfetti(true); createBooking(); setTimeout(() => setConfetti(false), 1500); }}>{creating ? 'Creating…' : 'Pay with Razorpay'}</BouncyCta>
             </Stack>
           </CardContent>
         </Card>
       )}
 
       {toast && (<Box position="fixed" right={16} bottom={16}><Alert severity="info" onClose={() => setToast(null)}>{toast}</Alert></Box>)}
+      <Confetti fire={confetti} />
     </Box>
   );
 }
