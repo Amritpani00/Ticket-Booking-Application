@@ -9,6 +9,7 @@ import com.example.ticketbooking.repository.SeatRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -19,7 +20,8 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Profile({"default","dev"})
-public class DataSeeder implements CommandLineRunner {
+@Order(0)
+public class CoachRakeSeeder implements CommandLineRunner {
 
     private final EventRepository eventRepository;
     private final CoachRepository coachRepository;
