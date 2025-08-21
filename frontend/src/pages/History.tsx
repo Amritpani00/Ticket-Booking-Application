@@ -5,6 +5,8 @@ import {
   CardContent,
   Typography,
   Grid,
+} from '@mui/material';
+import {
   Chip,
   Avatar,
   List,
@@ -49,6 +51,9 @@ import {
 } from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
+
+dayjs.extend(isBetween);
 
 interface BookingHistory {
   id: string;
@@ -285,7 +290,7 @@ export default function History() {
             Filters
           </Typography>
           <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid xs={12} sm={6} md={3}>
               <FormControl fullWidth>
                 <InputLabel>Status</InputLabel>
                 <Select 
@@ -301,7 +306,7 @@ export default function History() {
               </FormControl>
             </Grid>
             
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid xs={12} sm={6} md={3}>
               <DatePicker
                 label="From Date"
                 value={filters.dateRange[0] ? dayjs(filters.dateRange[0]) : null}
@@ -313,7 +318,7 @@ export default function History() {
               />
             </Grid>
             
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid xs={12} sm={6} md={3}>
               <DatePicker
                 label="To Date"
                 value={filters.dateRange[1] ? dayjs(filters.dateRange[1]) : null}
@@ -325,7 +330,7 @@ export default function History() {
               />
             </Grid>
             
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid xs={12} sm={6} md={3}>
               <FormControl fullWidth>
                 <InputLabel>Class Type</InputLabel>
                 <Select 
@@ -362,7 +367,7 @@ export default function History() {
               <Box key={booking.id}>
                 <Paper sx={{ p: 2, mb: 2, border: '1px solid', borderColor: 'divider' }}>
                   <Grid container spacing={2} alignItems="center">
-                    <Grid item xs={12} md={8}>
+                    <Grid xs={12} md={8}>
                       <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                         <TrainIcon sx={{ mr: 1, color: 'primary.main' }} />
                         <Typography variant="h6" fontWeight={600}>
@@ -381,7 +386,7 @@ export default function History() {
                       </Box>
                       
                       <Grid container spacing={3} sx={{ mb: 1 }}>
-                        <Grid item xs={6}>
+                        <Grid xs={6}>
                           <Box textAlign="center">
                             <Typography variant="h6" color="primary" fontWeight={600}>
                               {booking.departureTime}
@@ -391,7 +396,7 @@ export default function History() {
                             </Typography>
                           </Box>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid xs={6}>
                           <Box textAlign="center">
                             <Typography variant="h6" color="primary" fontWeight={600}>
                               {booking.arrivalTime}
@@ -424,7 +429,7 @@ export default function History() {
                       )}
                     </Grid>
                     
-                    <Grid item xs={12} md={4}>
+                    <Grid xs={12} md={4}>
                       <Box sx={{ textAlign: 'center' }}>
                         <Chip
                           icon={getStatusIcon(booking.status)}
@@ -518,7 +523,7 @@ export default function History() {
             </DialogTitle>
             <DialogContent>
               <Grid container spacing={3}>
-                <Grid item xs={12} md={6}>
+                <Grid xs={12} md={6}>
                   <Typography variant="h6" gutterBottom>Train Information</Typography>
                   <Typography variant="body2" gutterBottom>
                     <strong>Train:</strong> {selectedBooking.trainNumber} - {selectedBooking.trainName}
@@ -537,7 +542,7 @@ export default function History() {
                   </Typography>
                 </Grid>
                 
-                <Grid item xs={12} md={6}>
+                <Grid xs={12} md={6}>
                   <Typography variant="h6" gutterBottom>Booking Information</Typography>
                   <Typography variant="body2" gutterBottom>
                     <strong>PNR:</strong> {selectedBooking.pnr}

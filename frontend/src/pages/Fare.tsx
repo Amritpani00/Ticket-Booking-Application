@@ -5,6 +5,8 @@ import {
   CardContent,
   Typography,
   Grid,
+} from '@mui/material';
+import {
   TextField,
   Button,
   Table,
@@ -182,7 +184,7 @@ export default function Fare() {
             Search Fares
           </Typography>
           <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} md={3}>
+            <Grid xs={12} md={3}>
               <TextField
                 select
                 fullWidth
@@ -198,7 +200,7 @@ export default function Fare() {
               </TextField>
             </Grid>
             
-            <Grid item xs={12} md={3}>
+            <Grid xs={12} md={3}>
               <TextField
                 select
                 fullWidth
@@ -214,7 +216,7 @@ export default function Fare() {
               </TextField>
             </Grid>
             
-            <Grid item xs={12} md={2}>
+            <Grid xs={12} md={2}>
               <DatePicker
                 label="Journey Date"
                 value={journeyDate ? dayjs(journeyDate) : null}
@@ -223,7 +225,7 @@ export default function Fare() {
               />
             </Grid>
             
-            <Grid item xs={12} md={2}>
+            <Grid xs={12} md={2}>
               <FormControl fullWidth>
                 <InputLabel>Class Type</InputLabel>
                 <Select value={classType} onChange={(e) => setClassType(e.target.value)}>
@@ -238,7 +240,7 @@ export default function Fare() {
               </FormControl>
             </Grid>
             
-            <Grid item xs={12} md={2}>
+            <Grid xs={12} md={2}>
               <Button
                 variant="contained"
                 fullWidth
@@ -267,7 +269,7 @@ export default function Fare() {
               { from: 'BCT', to: 'MAS', name: 'Mumbai - Chennai' },
               { from: 'NDLS', to: 'SBC', name: 'Delhi - Bangalore' }
             ].map((route) => (
-              <Grid item xs={12} sm={6} md={3} key={route.name}>
+              <Grid xs={12} sm={6} md={3} key={route.name}>
                 <Paper 
                   sx={{ 
                     p: 2, 
@@ -318,7 +320,7 @@ export default function Fare() {
               <Box key={fare.trainNumber}>
                 <Paper sx={{ p: 2, mb: 2, border: '1px solid', borderColor: 'divider' }}>
                   <Grid container spacing={2} alignItems="center">
-                    <Grid item xs={12} md={8}>
+                    <Grid xs={12} md={8}>
                       <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                         <TrainIcon sx={{ mr: 1, color: 'primary.main' }} />
                         <Typography variant="h6" fontWeight={600}>
@@ -337,7 +339,7 @@ export default function Fare() {
                       </Box>
                       
                       <Grid container spacing={3} sx={{ mb: 1 }}>
-                        <Grid item xs={6}>
+                        <Grid xs={6}>
                           <Box textAlign="center">
                             <Typography variant="h6" color="primary" fontWeight={600}>
                               {fare.departureTime}
@@ -347,7 +349,7 @@ export default function Fare() {
                             </Typography>
                           </Box>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid xs={6}>
                           <Box textAlign="center">
                             <Typography variant="h6" color="primary" fontWeight={600}>
                               {fare.arrivalTime}
@@ -364,7 +366,7 @@ export default function Fare() {
                       </Typography>
                     </Grid>
                     
-                    <Grid item xs={12} md={4}>
+                    <Grid xs={12} md={4}>
                       <Box sx={{ textAlign: 'center' }}>
                         <Typography variant="h5" color="primary" fontWeight={700}>
                           ₹{getLowestFare(fare.classes)}
@@ -449,7 +451,7 @@ export default function Fare() {
             Fare Information & Policies
           </Typography>
           <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
+            <Grid xs={12} md={6}>
               <Accordion>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                   <Typography variant="subtitle1" fontWeight={600}>
@@ -481,7 +483,7 @@ export default function Fare() {
               </Accordion>
             </Grid>
             
-            <Grid item xs={12} md={6}>
+            <Grid xs={12} md={6}>
               <Accordion>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                   <Typography variant="subtitle1" fontWeight={600}>

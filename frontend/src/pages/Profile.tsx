@@ -5,6 +5,8 @@ import {
   CardContent,
   Typography,
   Grid,
+} from '@mui/material';
+import {
   Avatar,
   Button,
   TextField,
@@ -189,7 +191,7 @@ export default function Profile() {
 
       <Grid container spacing={3}>
         {/* Left Column - Profile Info */}
-        <Grid item xs={12} lg={8}>
+        <Grid xs={12} lg={8}>
           {/* Personal Information */}
           <Card sx={{ mb: 3 }}>
             <CardContent>
@@ -227,7 +229,7 @@ export default function Profile() {
               </Box>
 
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <TextField
                     fullWidth
                     label="Full Name"
@@ -238,7 +240,7 @@ export default function Profile() {
                   />
                 </Grid>
                 
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <TextField
                     fullWidth
                     label="Email"
@@ -250,7 +252,7 @@ export default function Profile() {
                   />
                 </Grid>
                 
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <TextField
                     fullWidth
                     label="Phone"
@@ -261,7 +263,7 @@ export default function Profile() {
                   />
                 </Grid>
                 
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <TextField
                     fullWidth
                     label="Date of Birth"
@@ -274,7 +276,7 @@ export default function Profile() {
                   />
                 </Grid>
                 
-                <Grid item xs={12}>
+                <Grid xs={12}>
                   <TextField
                     fullWidth
                     label="Address"
@@ -287,7 +289,7 @@ export default function Profile() {
                   />
                 </Grid>
                 
-                <Grid item xs={12} sm={4}>
+                <Grid xs={12} sm={4}>
                   <TextField
                     fullWidth
                     label="City"
@@ -298,7 +300,7 @@ export default function Profile() {
                   />
                 </Grid>
                 
-                <Grid item xs={12} sm={4}>
+                <Grid xs={12} sm={4}>
                   <TextField
                     fullWidth
                     label="State"
@@ -309,7 +311,7 @@ export default function Profile() {
                   />
                 </Grid>
                 
-                <Grid item xs={12} sm={4}>
+                <Grid xs={12} sm={4}>
                   <TextField
                     fullWidth
                     label="Pincode"
@@ -332,7 +334,7 @@ export default function Profile() {
               </Typography>
               
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <FormControlLabel
                     control={
                       <Switch
@@ -345,7 +347,7 @@ export default function Profile() {
                   />
                 </Grid>
                 
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <FormControlLabel
                     control={
                       <Switch
@@ -358,7 +360,7 @@ export default function Profile() {
                   />
                 </Grid>
                 
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <FormControlLabel
                     control={
                       <Switch
@@ -371,7 +373,7 @@ export default function Profile() {
                   />
                 </Grid>
                 
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <FormControlLabel
                     control={
                       <Switch
@@ -407,7 +409,7 @@ export default function Profile() {
         </Grid>
 
         {/* Right Column - Stats & Quick Actions */}
-        <Grid item xs={12} lg={4}>
+        <Grid xs={12} lg={4}>
           {/* Profile Summary */}
           <Card sx={{ mb: 3, textAlign: 'center' }}>
             <CardContent>
