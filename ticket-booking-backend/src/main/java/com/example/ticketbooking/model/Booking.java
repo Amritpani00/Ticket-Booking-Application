@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,7 +22,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class Booking {
 
-    public enum Status { PENDING_PAYMENT, CONFIRMED, CANCELED, EXPIRED }
+    public enum Status { PENDING_PAYMENT, CONFIRMED, CANCELED, EXPIRED, WAITLIST }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,4 +73,11 @@ public class Booking {
 
     @Column
     private OffsetDateTime reservationExpiresAt;
+
+    @Column
+    private LocalDate journeyDate;
+
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private java.util.Set<BookingPassenger> passengers = new java.util.HashSet<>();
 }

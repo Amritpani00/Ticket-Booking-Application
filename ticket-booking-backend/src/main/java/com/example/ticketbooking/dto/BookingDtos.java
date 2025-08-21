@@ -13,7 +13,6 @@ public class BookingDtos {
     public static class CreateBookingRequest {
         @NotNull
         private Long eventId;
-        @NotEmpty
         private List<Long> seatIds;
         @NotBlank
         private String customerName;
@@ -22,6 +21,10 @@ public class BookingDtos {
         private String customerEmail;
         @NotBlank
         private String customerPhone;
+        @NotBlank
+        private String journeyDate; // YYYY-MM-DD
+        @Size(min = 1)
+        private List<Passenger> passengers;
     }
 
     @Getter
@@ -54,6 +57,19 @@ public class BookingDtos {
     public static class BookingStatusResponse {
         private Long bookingId;
         private String status;
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    public static class Passenger {
+        @NotBlank
+        private String name;
+        @Min(1)
+        private Integer age;
+        @NotBlank
+        private String gender;
+        private String idProof;
     }
 
     @Getter

@@ -77,6 +77,23 @@ public class EventController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/{eventId}/availability")
+    public ResponseEntity<?> availability(@PathVariable Long eventId) {
+        return eventRepository.findById(eventId)
+                .map(e -> {
+                    long available = seatRepository.findByEvent_Id(eventId).stream().filter(s -> s.getStatus() == Seat.Status.AVAILABLE).count();
+                    long reserved = seatRepository.findByEvent_Id(eventId).stream().filter(s -> s.getStatus() == Seat.Status.RESERVED).count();
+                    long booked = seatRepository.findByEvent_Id(eventId).stream().filter(s -> s.getStatus() == Seat.Status.BOOKED).count();
+                    return ResponseEntity.ok(java.util.Map.of(
+                            "available", available,
+                            "reserved", reserved,
+                            "booked", booked,
+                            "total", available + reserved + booked
+                    ));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @GetMapping("/coaches/{coachId}/seats")
     public ResponseEntity<List<Seat>> seatsByCoach(@PathVariable Long coachId) {
         return coachRepository.findById(coachId)
