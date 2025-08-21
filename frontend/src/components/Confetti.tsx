@@ -4,6 +4,7 @@ export default function Confetti({ fire }: { fire: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!fire || !ref.current) return;
+    if (document.body.classList.contains('reduce-motion')) return;
     const el = ref.current;
     el.classList.remove('confetti');
     // trigger reflow

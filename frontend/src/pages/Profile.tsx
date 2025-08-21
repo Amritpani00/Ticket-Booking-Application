@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { apiGet, apiPost, apiPut } from '../api';
-import { Alert, Box, Button, Card, CardContent, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Card, CardContent, Stack, Switch, TextField, Typography } from '@mui/material';
+import { setReduceMotion } from '../components/ReduceMotion';
 
 export default function Profile() {
   const [name, setName] = useState('');
@@ -11,6 +12,9 @@ export default function Profile() {
   const [ok, setOk] = useState<string | null>(null);
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [reduceMotion, setReduceMotionState] = useState<boolean>(() => {
+    try { return localStorage.getItem('reduceMotion') === '1'; } catch { return false; }
+  });
 
   useEffect(() => {
     setLoading(true);
@@ -40,6 +44,12 @@ export default function Profile() {
     }
   }
 
+  function toggleReduceMotion() {
+    const next = !reduceMotion;
+    setReduceMotionState(next);
+    setReduceMotion(next);
+  }
+
   return (
     <Box>
       <Card sx={{ mb: 2 }}>
@@ -55,6 +65,10 @@ export default function Profile() {
             <TextField label="Email" value={email} disabled fullWidth />
             <TextField label="Name" value={name} onChange={e => setName(e.target.value)} fullWidth />
             <TextField label="Role" value={role} disabled fullWidth />
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <Switch checked={reduceMotion} onChange={toggleReduceMotion} />
+              <Typography>Reduce motion (accessibility)</Typography>
+            </Stack>
             <Button variant="contained" onClick={saveProfile} disabled={loading}>Save</Button>
           </Stack>
         </CardContent>

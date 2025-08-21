@@ -12,6 +12,7 @@ import Ticket from './pages/Ticket'
 import Admin from './pages/Admin'
 import Profile from './pages/Profile'
 import ProtectedRoute from './components/ProtectedRoute'
+import { initReduceMotionFromStorage } from './components/ReduceMotion'
 import History from './pages/History'
 import Fare from './pages/Fare'
 
@@ -39,6 +40,7 @@ const router = createBrowserRouter([
   },
 ])
 
+initReduceMotionFromStorage()
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <RouterProvider router={router} />
