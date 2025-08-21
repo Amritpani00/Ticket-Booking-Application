@@ -27,6 +27,11 @@ public class Seat {
     @JsonIgnore
     private Event event;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coach_id")
+    @JsonIgnore
+    private Coach coach;
+
     @Column(nullable = false)
     private String rowLabel;
 

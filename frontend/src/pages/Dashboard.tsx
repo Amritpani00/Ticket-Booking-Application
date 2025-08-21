@@ -3,6 +3,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { getToken } from '../auth';
 import { apiGet } from '../api';
 import { Alert, Box, Card, CardContent, Chip, Link, Skeleton, Stack, Typography } from '@mui/material';
+import AnimatedTrain from '../components/AnimatedTrain';
 
 interface EventItem { id: number; name: string; venue: string; seatPrice: number; }
 interface BookingSummary { bookingId: number; trainName: string; trainNumber?: string; source?: string; destination?: string; status: string; totalAmount: number; createdAt: string; }
@@ -37,6 +38,7 @@ export default function Dashboard() {
         <CardContent>
           <Typography variant="h5" fontWeight={700}>Dashboard</Typography>
           <Typography variant="body2" color="text.secondary">Welcome! Browse trains or continue booking.</Typography>
+          <AnimatedTrain />
         </CardContent>
       </Card>
       {loading && <Skeleton variant="rectangular" height={40} />}
@@ -46,7 +48,7 @@ export default function Dashboard() {
           <Card key={ev.id}>
             <CardContent>
               <Stack>
-                <Link component={RouterLink} to={`/`} underline="hover" variant="subtitle1" fontWeight={700}>{ev.name}</Link>
+                <Link component={RouterLink} to={`/?eventId=${ev.id}`} underline="hover" variant="subtitle1" fontWeight={700}>{ev.name}</Link>
                 <Typography variant="body2" color="text.secondary">{ev.venue}</Typography>
                 <Chip size="small" color="success" label={`₹${ev.seatPrice.toFixed(2)}`} sx={{ mt: 1, alignSelf: 'flex-start' }} />
               </Stack>
