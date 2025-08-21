@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Alert, Box, Card, CardContent, Chip, Divider, Skeleton, Stack, Typography } from '@mui/material';
+import { Alert, Box, Button, Card, CardContent, Chip, Divider, Skeleton, Stack, Typography } from '@mui/material';
 import { apiGet } from '../api';
 
 interface TicketDto {
@@ -31,15 +31,47 @@ export default function Ticket() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  if (loading) {
-    return <Skeleton variant="rounded" height={160} />;
-  }
-
-  if (error) {
-    return <Alert severity="error">{error}</Alert>;
-  }
-
+  if (loading) return <Skeleton variant="rounded" height={160} />;
+  if (error) return <Alert severity="error">{error}</Alert>;
   if (!ticket) return null;
+
+  function downloadPdf() {
+    const w = window.open('', '_blank');
+    if (!w) return;
+    const html = `<!doctype html><html><head><meta charset="utf-8"/><title>Ticket ${ticket!.bookingId}</title>
+      <style>
+        body{font-family:Arial,Helvetica,sans-serif;margin:20px;color:#111}
+        .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+        .muted{color:#6b7280}
+        .chip{display:inline-block;border:1px solid #e5e7eb;border-radius:9999px;padding:3px 8px;margin-left:4px}
+        .section{border-top:1px solid #e5e7eb;margin:10px 0;padding-top:8px}
+        h1{font-size:18px;margin:0 0 8px 0}
+      </style>
+      </head><body>
+        <div class="row">
+          <h1>E-Ticket</h1>
+          <span class="chip">${ticket!.status}</span>
+        </div>
+        <div class="section row">
+          <div>
+            <div><strong>${ticket!.trainNumber ? `${ticket!.trainNumber} — ` : ''}${ticket!.trainName}</strong></div>
+            <div class="muted">${ticket!.source || ''} → ${ticket!.destination || ''}</div>
+          </div>
+          <div>
+            ${ticket!.seatLabels.map(s => `<span class=\"chip\">${s}</span>`).join('')}
+          </div>
+        </div>
+        <div class="row muted">
+          <div>PNR/Booking ID: ${ticket!.bookingId}</div>
+          <div>Booked at: ${new Date(ticket!.createdAt).toLocaleString()}</div>
+          <div><strong>Total Paid: ₹${ticket!.totalAmount.toFixed(2)}</strong></div>
+        </div>
+        <script>window.onload=()=>{window.print(); setTimeout(()=>window.close(), 300);}</script>
+      </body></html>`;
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+  }
 
   return (
     <Box display="flex" justifyContent="center" mt={2}>
@@ -60,10 +92,13 @@ export default function Ticket() {
             </Stack>
           </Stack>
           <Divider sx={{ my: 1 }} />
-          <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" spacing={1}>
+          <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" spacing={1} alignItems={{ xs: 'flex-start', sm: 'center' }}>
             <Typography variant="body2" color="text.secondary">PNR/Booking ID: {ticket.bookingId}</Typography>
             <Typography variant="body2" color="text.secondary">Booked at: {new Date(ticket.createdAt).toLocaleString()}</Typography>
             <Typography variant="body2" fontWeight={700}>Total Paid: ₹{ticket.totalAmount.toFixed(2)}</Typography>
+          </Stack>
+          <Stack direction="row" justifyContent="flex-end" sx={{ mt: 1 }}>
+            <Button variant="outlined" onClick={downloadPdf}>Download PDF</Button>
           </Stack>
         </CardContent>
       </Card>
