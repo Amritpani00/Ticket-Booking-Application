@@ -53,6 +53,16 @@
 .pulse-icon:nth-of-type(3) { animation-delay: 0.4s; }
 .pulse-icon:nth-of-type(4) { animation-delay: 0.6s; }
 
+/* Gradient flow */
+@keyframes gradient-flow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+/* Dotted line */
+.dotted-line { height: 2px; background-image: radial-gradient(#9ca3af 1px, transparent 1px); background-size: 6px 2px; background-repeat: repeat-x; margin: 8px 0; opacity: 0.7; }
+
+/* Bouncy CTA */
+@keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+.bouncy-cta { animation: bounce-slow 1.6s ease-in-out infinite; }
+
 @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;

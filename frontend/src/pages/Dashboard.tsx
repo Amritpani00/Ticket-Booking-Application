@@ -6,6 +6,8 @@ import { Alert, Box, Card, CardContent, Chip, Link, Skeleton, Stack, Typography 
 import AnimatedTrain from '../components/AnimatedTrain';
 import AnimatedClouds from '../components/AnimatedClouds';
 import PulseIcons from '../components/PulseIcons';
+import GradientBanner from '../components/GradientBanner';
+import DottedLine from '../components/DottedLine';
 
 interface EventItem { id: number; name: string; venue: string; seatPrice: number; }
 interface BookingSummary { bookingId: number; trainName: string; trainNumber?: string; source?: string; destination?: string; status: string; totalAmount: number; createdAt: string; }
@@ -40,9 +42,11 @@ export default function Dashboard() {
         <CardContent>
           <Typography variant="h5" fontWeight={700}>Dashboard</Typography>
           <Typography variant="body2" color="text.secondary">Welcome! Browse trains or continue booking.</Typography>
+          <GradientBanner />
           <AnimatedClouds />
           <AnimatedTrain />
           <PulseIcons />
+          <DottedLine />
         </CardContent>
       </Card>
       {loading && <Skeleton variant="rectangular" height={40} />}
