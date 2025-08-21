@@ -6,6 +6,7 @@ import com.example.ticketbooking.service.BookingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,6 +32,7 @@ public class BookingController {
 	}
 
 	@GetMapping("/{id}")
+	@Transactional(readOnly = true)
 	public ResponseEntity<?> get(@PathVariable Long id) {
 		return bookingService.findById(id)
 				.map(b -> ResponseEntity.ok(new Object() {

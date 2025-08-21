@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class UserController {
     private final BookingRepository bookingRepository;
 
     @GetMapping("/bookings")
+    @Transactional(readOnly = true)
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<BookingDtos.BookingSummaryResponse>> myBookings(@AuthenticationPrincipal User principal) {
         String email = principal.getUsername();
