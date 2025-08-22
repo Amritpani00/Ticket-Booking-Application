@@ -123,6 +123,7 @@ public class BookingService {
 				.razorpayKeyId(paymentService.getKeyId())
 				.amount(saved.getTotalAmount())
 				.currency("INR")
+				.reservationExpiresAt(saved.getReservationExpiresAt())
 				.build();
 	}
 
