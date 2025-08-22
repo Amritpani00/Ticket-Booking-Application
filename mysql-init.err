@@ -1,0 +1,7 @@
+2025-08-22T10:05:18.758680Z 0 [System] [MY-015017] [Server] MySQL Server Initialization - start.
+2025-08-22T10:05:18.759782Z 0 [System] [MY-013169] [Server] /usr/sbin/mysqld (mysqld 8.4.6-0ubuntu0.25.04.1) initializing of server in progress as process 13518
+2025-08-22T10:05:18.761066Z 0 [Warning] [MY-010122] [Server] One can only use the --user switch if running as root
+2025-08-22T10:05:18.765411Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2025-08-22T10:05:19.005909Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2025-08-22T10:05:19.572753Z 6 [Warning] [MY-010453] [Server] root@localhost is created with an empty password ! Please consider switching off the --initialize-insecure option.
+2025-08-22T10:05:21.649247Z 0 [System] [MY-015018] [Server] MySQL Server Initialization - end.

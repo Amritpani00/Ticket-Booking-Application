@@ -1,0 +1,10 @@
+2025-08-22T10:05:32.324325Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2025-08-22T10:05:32.571826Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.4.6-0ubuntu0.25.04.1) starting as process 13715
+2025-08-22T10:05:32.573214Z 0 [Warning] [MY-010122] [Server] One can only use the --user switch if running as root
+2025-08-22T10:05:32.578541Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2025-08-22T10:05:32.787827Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2025-08-22T10:05:32.870055Z 0 [ERROR] [MY-011300] [Server] Plugin mysqlx reported: 'Setup of socket: '/var/run/mysqld/mysqlx.sock' failed, can't create lock file /var/run/mysqld/mysqlx.sock.lock'
+2025-08-22T10:05:32.994098Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2025-08-22T10:05:32.994127Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2025-08-22T10:05:33.014890Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '127.0.0.1' port: 33060
+2025-08-22T10:05:33.014908Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.4.6-0ubuntu0.25.04.1'  socket: '/workspace/mysql.sock'  port: 3306  (Ubuntu).
