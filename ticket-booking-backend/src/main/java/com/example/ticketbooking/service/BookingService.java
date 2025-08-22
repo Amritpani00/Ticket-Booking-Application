@@ -34,6 +34,7 @@ public class BookingService {
 	private final BookingRepository bookingRepository;
 	private final PaymentService paymentService;
 	private final PNRRepository pnrRepository;
+	private final SeatUpdateBroadcaster seatUpdateBroadcaster;
 
 	@Transactional
 	public BookingDtos.CreateBookingResponse createBooking(BookingDtos.CreateBookingRequest request) throws Exception {
@@ -73,6 +74,10 @@ public class BookingService {
 		booking.setCustomerName(request.getCustomerName());
 		booking.setCustomerEmail(request.getCustomerEmail());
 		booking.setCustomerPhone(request.getCustomerPhone());
+		// Parse and set journey date from validated YYYY-MM-DD string
+		if (request.getJourneyDate() != null && !request.getJourneyDate().isBlank()) {
+			booking.setJourneyDate(java.time.LocalDate.parse(request.getJourneyDate()));
+		}
 		booking.setTotalAmount(total);
 		booking.setStatus(Booking.Status.PENDING_PAYMENT);
 		booking.setCreatedAt(OffsetDateTime.now());
@@ -80,6 +85,10 @@ public class BookingService {
 		booking = bookingRepository.save(booking);
 
 		for (Seat seat : lockedSeats) { seat.setStatus(Seat.Status.RESERVED); }
+		// Broadcast seat reservation updates
+		if (!lockedSeats.isEmpty()) {
+			seatUpdateBroadcaster.broadcastSeatStatus(event.getId(), lockedSeats);
+		}
 
 		// Save passengers; map seats if assigned
 		if (request.getPassengers() != null) {
@@ -94,9 +103,13 @@ public class BookingService {
 						.idProof(p.getIdProof())
 						.seat(seat)
 						.build();
-				// Will be cascaded if set; else repository needed
+				// Ensure cascading by attaching passenger to booking aggregate
+				booking.getPassengers().add(bp);
 			}
 		}
+
+		// Persist passengers before creating payment order so booking reflects full state
+		booking = bookingRepository.save(booking);
 
 		long amountInPaise = total.multiply(BigDecimal.valueOf(100)).longValue();
 		Order order = paymentService.createOrder(amountInPaise, "booking-" + booking.getId());
@@ -110,6 +123,7 @@ public class BookingService {
 				.razorpayKeyId(paymentService.getKeyId())
 				.amount(saved.getTotalAmount())
 				.currency("INR")
+				.reservationExpiresAt(saved.getReservationExpiresAt())
 				.build();
 	}
 
@@ -167,7 +181,12 @@ public class BookingService {
 			pnrRepository.save(pnr);
 		}
 
-		return bookingRepository.save(booking);
+		Booking savedBooking = bookingRepository.save(booking);
+		// Broadcast seat booking updates
+		if (seats != null && !seats.isEmpty()) {
+			seatUpdateBroadcaster.broadcastSeatStatus(booking.getEvent().getId(), new java.util.ArrayList<>(seats));
+		}
+		return savedBooking;
 	}
 
 	public Optional<Booking> findById(Long id) {

@@ -33,14 +33,15 @@ public class BookingDtos {
 
 	@Getter
 	@Setter
-	@Builder
-	public static class CreateBookingResponse {
-		private Long bookingId;
-		private String orderId;
-		private String razorpayKeyId;
-		private BigDecimal amount;
-		private String currency;
-	}
+			@Builder
+		public static class CreateBookingResponse {
+			private Long bookingId;
+			private String orderId;
+			private String razorpayKeyId;
+			private BigDecimal amount;
+			private String currency;
+			private java.time.OffsetDateTime reservationExpiresAt;
+		}
 
 	@Getter
 	@Setter
@@ -76,7 +77,6 @@ public class BookingDtos {
 		@NotBlank
 		@Pattern(regexp = "(?i)MALE|FEMALE|OTHER", message = "gender must be MALE, FEMALE or OTHER")
 		private String gender;
-		@NotBlank
 		private String idProof;
 		@NotBlank
 		private String idProofType;

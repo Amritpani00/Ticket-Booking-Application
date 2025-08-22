@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,4 +18,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
 	@Query("select b from Booking b join fetch b.event where lower(b.customerEmail) = lower(:email) order by b.createdAt desc")
 	List<Booking> findSummariesByCustomerEmailIgnoreCaseOrderByCreatedAtDesc(@Param("email") String email);
+
+	List<Booking> findByStatusAndReservationExpiresAtBefore(Booking.Status status, OffsetDateTime time);
 }
