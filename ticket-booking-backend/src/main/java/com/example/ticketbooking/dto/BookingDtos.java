@@ -16,15 +16,18 @@ public class BookingDtos {
 		private Long eventId;
 		private List<Long> seatIds;
 		@NotBlank
+		@Size(min = 2, max = 100)
 		private String customerName;
 		@Email
 		@NotBlank
 		private String customerEmail;
 		@NotBlank
+		@Pattern(regexp = "^[0-9]{10}$", message = "Phone must be 10 digits")
 		private String customerPhone;
 		@NotBlank
+		@Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "journeyDate must be YYYY-MM-DD")
 		private String journeyDate; // YYYY-MM-DD
-		@Size(min = 1)
+		@Size(min = 1, message = "At least one passenger is required")
 		private List<Passenger> passengers;
 	}
 
@@ -65,16 +68,27 @@ public class BookingDtos {
 	@Builder
 	public static class Passenger {
 		@NotBlank
+		@Size(min = 2, max = 100)
 		private String name;
 		@Min(1)
+		@Max(120)
 		private Integer age;
 		@NotBlank
+		@Pattern(regexp = "(?i)MALE|FEMALE|OTHER", message = "gender must be MALE, FEMALE or OTHER")
 		private String gender;
+		@NotBlank
 		private String idProof;
+		@NotBlank
 		private String idProofType;
+		@NotBlank
+		@Size(min = 4, max = 50)
 		private String idProofNumber;
+		@NotBlank
 		private String passengerType;
+		@NotBlank
+		@Pattern(regexp = "^[0-9]{10}$", message = "Contact number must be 10 digits")
 		private String contactNumber;
+		@Email
 		private String email;
 	}
 

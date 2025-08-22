@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -26,7 +27,7 @@ public class BookingController {
 	private final PNRRepository pnrRepository;
 
 	@PostMapping
-	public ResponseEntity<BookingDtos.CreateBookingResponse> createBooking(@RequestBody BookingDtos.CreateBookingRequest request) {
+	public ResponseEntity<BookingDtos.CreateBookingResponse> createBooking(@Valid @RequestBody BookingDtos.CreateBookingRequest request) {
 		try {
 			BookingDtos.CreateBookingResponse response = bookingService.createBooking(request);
 			return ResponseEntity.ok(response);
@@ -36,7 +37,7 @@ public class BookingController {
 	}
 
 	@PostMapping("/verify")
-	public ResponseEntity<Map<String, Object>> verifyPayment(@RequestBody BookingDtos.VerifyPaymentRequest request) {
+	public ResponseEntity<Map<String, Object>> verifyPayment(@Valid @RequestBody BookingDtos.VerifyPaymentRequest request) {
 		try {
 			Booking booking = bookingService.confirmPayment(request);
 			PNR pnr = pnrRepository.findByBooking_Id(booking.getId()).orElse(null);

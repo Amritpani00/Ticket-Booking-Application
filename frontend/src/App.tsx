@@ -328,6 +328,15 @@ function App() {
     setSelectedSeatIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]); 
   }
 
+  function validateCustomer(): string | null {
+    if (!customer.name || customer.name.trim().length < 2) return 'Enter a valid name (min 2 chars)';
+    const emailOk = /.+@.+\..+/.test(customer.email || passengers[0]?.email || '');
+    if (!emailOk) return 'Enter a valid email';
+    const phone = (customer.phone || passengers[0]?.contactNumber || '').trim();
+    if (!/^\d{10}$/.test(phone)) return 'Enter a valid 10-digit phone number';
+    return null;
+  }
+
   const handleAdvancedSearch = (filters: SearchFilters) => {
     setSearchFilters(filters);
     setSearchMode('advanced');
@@ -367,6 +376,8 @@ function App() {
       setToast('Please select at least one seat');
       return;
     }
+    const err = validateCustomer();
+    if (err) { setToast(err); return; }
     setShowPassengerForm(true);
     setShowBookingSummary(false);
     setBookingStep(1);
@@ -380,6 +391,15 @@ function App() {
     if (passengers.length !== selectedSeatIds.length) {
       setToast(`Please add details for all ${selectedSeatIds.length} passengers`);
       return;
+    }
+    // Basic passenger validation
+    for (const p of passengers) {
+      if (!p.name || p.name.trim().length < 2) { setToast('Enter valid passenger names'); return; }
+      if (!/^\d{1,3}$/.test(p.age) || parseInt(p.age) < 1 || parseInt(p.age) > 120) { setToast('Enter valid ages (1-120)'); return; }
+      if (!p.gender) { setToast('Select gender for all passengers'); return; }
+      if (!p.idProofType || !p.idProofNumber) { setToast('Provide ID proof details'); return; }
+      if (!/^\d{10}$/.test((p.contactNumber || '').trim())) { setToast('Enter 10-digit contact numbers'); return; }
+      if (p.email && !/.+@.+\..+/.test(p.email)) { setToast('Enter valid emails'); return; }
     }
     setShowPassengerForm(false);
     setShowBookingSummary(true);
@@ -439,6 +459,8 @@ function App() {
 
   async function createBooking() {
     if (!selectedEvent || selectedSeatIds.length === 0 || passengers.length === 0) return;
+    const err = validateCustomer();
+    if (err) { setToast(err); return; }
     
     setCreating(true);
     try {
