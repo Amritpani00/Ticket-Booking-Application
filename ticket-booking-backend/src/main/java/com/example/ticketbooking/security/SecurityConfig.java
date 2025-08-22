@@ -31,12 +31,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable());
         http.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/events/**").permitAll()
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated());
-        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        		http.authorizeHttpRequests(auth -> auth
+				.requestMatchers("/api/auth/**").permitAll()
+				.requestMatchers("/api/events/**").permitAll()
+				.requestMatchers("/api/payments/webhook/**").permitAll()
+				.requestMatchers("/api/admin/**").hasRole("ADMIN")
+				.anyRequest().authenticated());
+http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
