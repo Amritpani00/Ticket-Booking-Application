@@ -34,6 +34,7 @@ public class BookingService {
 	private final BookingRepository bookingRepository;
 	private final PaymentService paymentService;
 	private final PNRRepository pnrRepository;
+	private final SeatUpdateBroadcaster seatUpdateBroadcaster;
 
 	@Transactional
 	public BookingDtos.CreateBookingResponse createBooking(BookingDtos.CreateBookingRequest request) throws Exception {
@@ -84,6 +85,10 @@ public class BookingService {
 		booking = bookingRepository.save(booking);
 
 		for (Seat seat : lockedSeats) { seat.setStatus(Seat.Status.RESERVED); }
+		// Broadcast seat reservation updates
+		if (!lockedSeats.isEmpty()) {
+			seatUpdateBroadcaster.broadcastSeatStatus(event.getId(), lockedSeats);
+		}
 
 		// Save passengers; map seats if assigned
 		if (request.getPassengers() != null) {
@@ -175,7 +180,12 @@ public class BookingService {
 			pnrRepository.save(pnr);
 		}
 
-		return bookingRepository.save(booking);
+		Booking savedBooking = bookingRepository.save(booking);
+		// Broadcast seat booking updates
+		if (seats != null && !seats.isEmpty()) {
+			seatUpdateBroadcaster.broadcastSeatStatus(booking.getEvent().getId(), new java.util.ArrayList<>(seats));
+		}
+		return savedBooking;
 	}
 
 	public Optional<Booking> findById(Long id) {

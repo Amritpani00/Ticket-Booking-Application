@@ -350,6 +350,31 @@ function App() {
     return () => clearInterval(timer);
   }, [selectedCoachId]);
 
+  useEffect(() => {
+    if (!selectedEvent) return;
+    let cancelled = false;
+    const es = new EventSource(`/api/events/${selectedEvent.id}/seats/stream`);
+    es.onmessage = (ev) => {
+      try {
+        const msg = JSON.parse(ev.data);
+        if (!msg || !msg.data) return;
+        const updates: any[] = msg.data;
+        setSeats((prev) => {
+          // Merge updates into existing seats; if init, replace
+          if (msg.type === 'init') return updates as any;
+          const map = new Map(prev.map(s => [s.id, s] as const));
+          for (const u of updates) {
+            const existing = map.get(u.id);
+            if (existing) { map.set(u.id, { ...existing, status: u.status }); }
+          }
+          return Array.from(map.values());
+        });
+      } catch {}
+    };
+    es.onerror = () => { if (!cancelled) es.close(); };
+    return () => { cancelled = true; es.close(); };
+  }, [selectedEvent?.id]);
+
   const total = useMemo(() => { if (!selectedEvent) return 0; return selectedSeatIds.length * selectedEvent.seatPrice; }, [selectedSeatIds, selectedEvent]);
   
   function toggleSeat(id: number) { 
