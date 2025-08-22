@@ -232,6 +232,34 @@ function App() {
     ]
   }), []);
 
+  const [customerErrors, setCustomerErrors] = useState<{ name?: string; email?: string; phone?: string }>({});
+
+  function validateCustomerFields(next = customer) {
+    const errs: { name?: string; email?: string; phone?: string } = {};
+    if (!next.name || next.name.trim().length < 2) errs.name = 'Enter at least 2 characters';
+    const emailCandidate = next.email || passengers[0]?.email || '';
+    if (!/.+@.+\..+/.test(emailCandidate)) errs.email = 'Enter a valid email';
+    const phoneCandidate = (next.phone || passengers[0]?.contactNumber || '').trim();
+    if (!/^\d{10}$/.test(phoneCandidate)) errs.phone = 'Enter a 10-digit phone number';
+    return errs;
+  }
+
+  function setCustomerField(field: 'name'|'email'|'phone', value: string) {
+    const next = { ...customer, [field]: value };
+    setCustomer(next);
+    setCustomerErrors(validateCustomerFields(next));
+  }
+
+  function validateCustomer(): string | null {
+    const errs = validateCustomerFields();
+    setCustomerErrors(errs);
+    const first = Object.values(errs)[0];
+    return first || null;
+  }
+
+  const canProceedToPassenger = selectedSeatIds.length > 0 &&
+    !validateCustomerFields().name && !validateCustomerFields().email && !validateCustomerFields().phone;
+
   useEffect(() => {
     let active = true;
     setLoadingEvents(true);
@@ -326,15 +354,6 @@ function App() {
   
   function toggleSeat(id: number) { 
     setSelectedSeatIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]); 
-  }
-
-  function validateCustomer(): string | null {
-    if (!customer.name || customer.name.trim().length < 2) return 'Enter a valid name (min 2 chars)';
-    const emailOk = /.+@.+\..+/.test(customer.email || passengers[0]?.email || '');
-    if (!emailOk) return 'Enter a valid email';
-    const phone = (customer.phone || passengers[0]?.contactNumber || '').trim();
-    if (!/^\d{10}$/.test(phone)) return 'Enter a valid 10-digit phone number';
-    return null;
   }
 
   const handleAdvancedSearch = (filters: SearchFilters) => {
@@ -709,9 +728,9 @@ function App() {
 
                       {/* Customer Details */}
                       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems={{ xs: 'stretch', sm: 'center' }} sx={{ mb: 2 }}>
-                        <TextField label="Name" value={customer.name} onChange={(e) => setCustomer({ ...customer, name: e.target.value })} fullWidth />
-                        <TextField label="Email" type="email" value={customer.email} onChange={(e) => setCustomer({ ...customer, email: e.target.value })} fullWidth />
-                        <TextField label="Phone" value={customer.phone} onChange={(e) => setCustomer({ ...customer, phone: e.target.value })} fullWidth />
+                        <TextField label="Name" value={customer.name} onChange={(e) => setCustomerField('name', e.target.value)} fullWidth error={!!customerErrors.name} helperText={customerErrors.name} />
+                        <TextField label="Email" type="email" value={customer.email} onChange={(e) => setCustomerField('email', e.target.value)} fullWidth error={!!customerErrors.email} helperText={customerErrors.email} />
+                        <TextField label="Phone" value={customer.phone} onChange={(e) => setCustomerField('phone', e.target.value)} fullWidth error={!!customerErrors.phone} helperText={customerErrors.phone} />
                       </Stack>
 
                       {/* Action Buttons */}
@@ -719,7 +738,7 @@ function App() {
                         <Button
                           variant="contained"
                           onClick={handleProceedToPassengerDetails}
-                          disabled={selectedSeatIds.length === 0}
+                          disabled={selectedSeatIds.length === 0 || !canProceedToPassenger}
                           size="large"
                           sx={{ minWidth: 200 }}
                         >

@@ -1,5 +1,6 @@
 /workspace/ticket-booking-backend/src/main/java/com/example/ticketbooking/TicketBookingBackendApplication.java
 /workspace/ticket-booking-backend/src/main/java/com/example/ticketbooking/config/DataSeeder.java
+/workspace/ticket-booking-backend/src/main/java/com/example/ticketbooking/config/GlobalExceptionHandler.java
 /workspace/ticket-booking-backend/src/main/java/com/example/ticketbooking/controller/AdminController.java
 /workspace/ticket-booking-backend/src/main/java/com/example/ticketbooking/controller/AuthController.java
 /workspace/ticket-booking-backend/src/main/java/com/example/ticketbooking/controller/BookingController.java

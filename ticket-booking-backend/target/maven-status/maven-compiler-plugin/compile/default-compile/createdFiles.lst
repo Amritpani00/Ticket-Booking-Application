@@ -22,6 +22,7 @@ com/example/ticketbooking/model/TrainSchedule.class
 com/example/ticketbooking/dto/CoachDtos$CoachDtosBuilder.class
 com/example/ticketbooking/controller/FareController.class
 com/example/ticketbooking/dto/BookingDtos$CreateBookingRequest.class
+com/example/ticketbooking/config/GlobalExceptionHandler.class
 com/example/ticketbooking/service/PaymentService.class
 com/example/ticketbooking/controller/UserController.class
 com/example/ticketbooking/model/Booking.class
