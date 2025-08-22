@@ -32,12 +32,14 @@ public class SeatUpdateBroadcaster {
 
 		// Send initial snapshot
 		List<Map<String, Object>> snapshot = seatRepository.findByEvent_Id(eventId).stream()
-				.map(s -> Map.of(
-						"id", s.getId(),
-						"rowLabel", s.getRowLabel(),
-						"seatNumber", s.getSeatNumber(),
-						"status", s.getStatus().name()
-				))
+				.map(s -> {
+					java.util.Map<String, Object> m = new java.util.HashMap<>();
+					m.put("id", s.getId());
+					m.put("rowLabel", s.getRowLabel());
+					m.put("seatNumber", s.getSeatNumber());
+					m.put("status", s.getStatus().name());
+					return m;
+				})
 				.collect(Collectors.toList());
 		try {
 			emitter.send(SseEmitter.event()
@@ -50,12 +52,14 @@ public class SeatUpdateBroadcaster {
 
 	public void broadcastSeatStatus(Long eventId, List<Seat> seats) {
 		List<Map<String, Object>> updates = seats.stream()
-				.map(s -> Map.of(
-						"id", s.getId(),
-						"rowLabel", s.getRowLabel(),
-						"seatNumber", s.getSeatNumber(),
-						"status", s.getStatus().name()
-				))
+				.map(s -> {
+					java.util.Map<String, Object> m = new java.util.HashMap<>();
+					m.put("id", s.getId());
+					m.put("rowLabel", s.getRowLabel());
+					m.put("seatNumber", s.getSeatNumber());
+					m.put("status", s.getStatus().name());
+					return m;
+				})
 				.collect(Collectors.toList());
 		CopyOnWriteArrayList<SseEmitter> emitters = eventIdToEmitters.get(eventId);
 		if (emitters == null || emitters.isEmpty()) return;
