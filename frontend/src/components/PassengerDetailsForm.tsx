@@ -10,13 +10,13 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Grid,
   IconButton,
   Stack,
   Chip,
   Divider,
   Alert
 } from '@mui/material';
+import Grid from '@mui/material/GridLegacy';
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
@@ -157,7 +157,7 @@ export default function PassengerDetailsForm({
             </Box>
 
             <Grid container spacing={2}>
-              <Grid item xs={12} md={6}>
+              <Grid xs={12} md={6}>
                 <TextField
                   label="Full Name *"
                   value={passenger.name}
@@ -169,7 +169,7 @@ export default function PassengerDetailsForm({
                 />
               </Grid>
               
-              <Grid item xs={12} md={3}>
+              <Grid xs={12} md={3}>
                 <TextField
                   label="Age *"
                   value={passenger.age}
@@ -182,7 +182,7 @@ export default function PassengerDetailsForm({
                 />
               </Grid>
               
-              <Grid item xs={12} md={3}>
+              <Grid xs={12} md={3}>
                 <FormControl fullWidth error={!!getError(index, 'gender')}>
                   <InputLabel>Gender *</InputLabel>
                   <Select
@@ -197,7 +197,7 @@ export default function PassengerDetailsForm({
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} md={4}>
+              <Grid xs={12} md={4}>
                 <FormControl fullWidth error={!!getError(index, 'passengerType')}>
                   <InputLabel>Passenger Type</InputLabel>
                   <Select
@@ -213,7 +213,7 @@ export default function PassengerDetailsForm({
                 </FormControl>
               </Grid>
               
-              <Grid item xs={12} md={4}>
+              <Grid xs={12} md={4}>
                 <FormControl fullWidth error={!!getError(index, 'idProofType')}>
                   <InputLabel>ID Proof Type *</InputLabel>
                   <Select
@@ -231,7 +231,7 @@ export default function PassengerDetailsForm({
                 </FormControl>
               </Grid>
               
-              <Grid item xs={12} md={4}>
+              <Grid xs={12} md={4}>
                 <TextField
                   label="ID Proof Number *"
                   value={passenger.idProofNumber}
@@ -243,7 +243,7 @@ export default function PassengerDetailsForm({
                 />
               </Grid>
 
-              <Grid item xs={12} md={6}>
+              <Grid xs={12} md={6}>
                 <TextField
                   label="Contact Number *"
                   value={passenger.contactNumber}
@@ -255,7 +255,7 @@ export default function PassengerDetailsForm({
                 />
               </Grid>
               
-              <Grid item xs={12} md={6}>
+              <Grid xs={12} md={6}>
                 <TextField
                   label="Email"
                   value={passenger.email}

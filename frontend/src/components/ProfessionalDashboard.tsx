@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Card,
   CardContent,
   Typography,
-  Grid,
   Paper,
   Chip,
   Button,
@@ -20,6 +19,7 @@ import {
   Stack,
   Tooltip
 } from '@mui/material';
+import Grid from '@mui/material/GridLegacy';
 import {
   Train as TrainIcon,
   TrendingUp as TrendingUpIcon,
@@ -165,7 +165,7 @@ export default function ProfessionalDashboard({
 
       {/* Statistics Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <Zoom in={true} timeout={800}>
             <Card 
               elevation={2}
@@ -198,7 +198,7 @@ export default function ProfessionalDashboard({
           </Zoom>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <Zoom in={true} timeout={900}>
             <Card 
               elevation={2}
@@ -231,7 +231,7 @@ export default function ProfessionalDashboard({
           </Zoom>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <Zoom in={true} timeout={1000}>
             <Card 
               elevation={2}
@@ -264,7 +264,7 @@ export default function ProfessionalDashboard({
           </Zoom>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <Zoom in={true} timeout={1100}>
             <Card 
               elevation={2}
@@ -300,7 +300,7 @@ export default function ProfessionalDashboard({
 
       {/* Performance Metrics */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} md={6}>
+        <Grid xs={12} md={6}>
           <Slide direction="up" in={true} timeout={1200}>
             <Card elevation={2} sx={{ height: '100%' }}>
               <CardContent>
@@ -336,7 +336,7 @@ export default function ProfessionalDashboard({
           </Slide>
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid xs={12} md={6}>
           <Slide direction="up" in={true} timeout={1300}>
             <Card elevation={2} sx={{ height: '100%' }}>
               <CardContent>
@@ -378,7 +378,7 @@ export default function ProfessionalDashboard({
               Quick Actions
             </Typography>
             <Grid container spacing={2}>
-              <Grid item xs={6} sm={3}>
+              <Grid xs={6} sm={3}>
                 <Button
                   fullWidth
                   variant="outlined"
@@ -396,7 +396,7 @@ export default function ProfessionalDashboard({
                   </Typography>
                 </Button>
               </Grid>
-              <Grid item xs={6} sm={3}>
+              <Grid xs={6} sm={3}>
                 <Button
                   fullWidth
                   variant="outlined"
@@ -414,7 +414,7 @@ export default function ProfessionalDashboard({
                   </Typography>
                 </Button>
               </Grid>
-              <Grid item xs={6} sm={3}>
+              <Grid xs={6} sm={3}>
                 <Button
                   fullWidth
                   variant="outlined"
@@ -432,7 +432,7 @@ export default function ProfessionalDashboard({
                   </Typography>
                 </Button>
               </Grid>
-              <Grid item xs={6} sm={3}>
+              <Grid xs={6} sm={3}>
                 <Button
                   fullWidth
                   variant="outlined"

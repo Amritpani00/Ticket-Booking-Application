@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
   Typography,
-  Grid,
   Chip,
   Divider,
   Stack,
@@ -19,6 +18,7 @@ import {
   TableRow,
   Paper
 } from '@mui/material';
+import Grid from '@mui/material/GridLegacy';
 import {
   Train as TrainIcon,
   AccessTime as TimeIcon,
@@ -32,13 +32,13 @@ import { apiGet } from '../api';
 interface TrainInfo {
   id: number;
   name: string;
-  trainNumber: string;
-  source: string;
-  destination: string;
+  trainNumber?: string;
+  source?: string;
+  destination?: string;
   startTime: string;
   endTime: string;
   seatPrice: number;
-  classType: string;
+  classType?: string;
   platformNumber?: string;
   journeyDurationMinutes?: number;
 }
@@ -105,7 +105,7 @@ export default function BookingSummary({
       setLoading(true);
       setError(null);
       
-      const response = await apiGet(`/api/train-search/fare-enquiry?eventId=${train.id}&classType=${selectedSeats[0].classType}&journeyDate=${journeyDate}&numberOfPassengers=${passengers.length}`);
+      const response = await apiGet<FareBreakdown>(`/api/train-search/fare-enquiry?eventId=${train.id}&classType=${selectedSeats[0].classType}&journeyDate=${journeyDate}&numberOfPassengers=${passengers.length}`);
       
       setFareBreakdown(response);
     } catch (err: any) {
@@ -198,28 +198,28 @@ export default function BookingSummary({
           <CardContent>
             <Typography variant="h6" fontWeight={600} gutterBottom>
               <TrainIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
-              {train.trainNumber} — {train.name}
+              {train.trainNumber || 'N/A'} — {train.name}
             </Typography>
             
             <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
+              <Grid xs={12} md={6}>
                 <Stack spacing={1}>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <LocationIcon sx={{ mr: 1, color: 'primary.main' }} />
                     <Typography variant="body1">
-                      <strong>From:</strong> {train.source}
+                      <strong>From:</strong> {train.source || 'TBD'}
                     </Typography>
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <LocationIcon sx={{ mr: 1, color: 'success.main' }} />
                     <Typography variant="body1">
-                      <strong>To:</strong> {train.destination}
+                      <strong>To:</strong> {train.destination || 'TBD'}
                     </Typography>
                   </Box>
                 </Stack>
               </Grid>
               
-              <Grid item xs={12} md={6}>
+              <Grid xs={12} md={6}>
                 <Stack spacing={1}>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <TimeIcon sx={{ mr: 1, color: 'primary.main' }} />
@@ -240,7 +240,7 @@ export default function BookingSummary({
             <Divider sx={{ my: 2 }} />
             
             <Grid container spacing={2}>
-              <Grid item xs={6} md={3}>
+              <Grid xs={6} md={3}>
                 <Typography variant="body2" color="text.secondary">
                   Journey Date
                 </Typography>
@@ -249,7 +249,7 @@ export default function BookingSummary({
                 </Typography>
               </Grid>
               
-              <Grid item xs={6} md={3}>
+              <Grid xs={6} md={3}>
                 <Typography variant="body2" color="text.secondary">
                   Duration
                 </Typography>
@@ -258,16 +258,16 @@ export default function BookingSummary({
                 </Typography>
               </Grid>
               
-              <Grid item xs={6} md={3}>
+              <Grid xs={6} md={3}>
                 <Typography variant="body2" color="text.secondary">
                   Class
                 </Typography>
                 <Typography variant="body1" fontWeight={600}>
-                  {getClassTypeLabel(train.classType)}
+                  {train.classType ? getClassTypeLabel(train.classType) : 'N/A'}
                 </Typography>
               </Grid>
               
-              <Grid item xs={6} md={3}>
+              <Grid xs={6} md={3}>
                 <Typography variant="body2" color="text.secondary">
                   Platform
                 </Typography>
@@ -343,7 +343,7 @@ export default function BookingSummary({
             
             <Grid container spacing={2}>
               {selectedSeats.map((seat, index) => (
-                <Grid item xs={6} md={3} key={seat.id}>
+                <Grid xs={6} md={3} key={seat.id}>
                   <Chip
                     label={`${seat.coachCode} - ${seat.rowLabel}${seat.seatNumber}`}
                     color="primary"
@@ -366,7 +366,7 @@ export default function BookingSummary({
               </Typography>
               
               <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
+                <Grid xs={12} md={6}>
                   <Stack spacing={1}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                       <Typography>Base Fare (per passenger):</Typography>
@@ -397,7 +397,7 @@ export default function BookingSummary({
                   </Stack>
                 </Grid>
                 
-                <Grid item xs={12} md={6}>
+                <Grid xs={12} md={6}>
                   <Box sx={{ p: 2, bgcolor: 'primary.main', color: 'white', borderRadius: 1 }}>
                     <Typography variant="h6" gutterBottom>
                       Total Amount

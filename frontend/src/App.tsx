@@ -580,8 +580,8 @@ function App() {
                         key={ev.id}
                         train={ev}
                         isSelected={selectedEvent?.id === ev.id}
-                        onSelect={setSelectedEvent}
-                        onViewDetails={handleViewTrainDetails}
+                        onSelect={(t) => setSelectedEvent(t as EventDto)}
+                        onViewDetails={(t) => handleViewTrainDetails(t as EventDto)}
                       />
                     ))}
                   </Box>
