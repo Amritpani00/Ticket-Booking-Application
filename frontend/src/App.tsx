@@ -506,7 +506,12 @@ function App() {
       const resp = await apiPost<any, CreateBookingResponse>('/api/bookings', request);
       await launchRazorpay(resp);
     } catch (e: any) { 
-      setToast(e.message || 'Failed to create booking'); 
+      if (e?.code === 'VALIDATION_ERROR' && e?.details) {
+        const first = Object.values(e.details as any)[0] as string;
+        setToast(first || e.message || 'Validation failed');
+      } else {
+        setToast(e.message || 'Failed to create booking'); 
+      }
     } finally { 
       setCreating(false); 
     }
@@ -528,7 +533,12 @@ function App() {
         navigate(`/ticket/${data.bookingId}`);
         return;
       } catch (e: any) {
-        setToast(e.message || 'Payment verification failed');
+        if (e?.code === 'VALIDATION_ERROR' && e?.details) {
+          const first = Object.values(e.details as any)[0] as string;
+          setToast(first || e.message || 'Validation failed');
+        } else {
+          setToast(e.message || 'Payment verification failed');
+        }
         return;
       }
     }
