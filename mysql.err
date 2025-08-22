@@ -8,3 +8,4 @@
 2025-08-22T10:05:32.994127Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
 2025-08-22T10:05:33.014890Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '127.0.0.1' port: 33060
 2025-08-22T10:05:33.014908Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.4.6-0ubuntu0.25.04.1'  socket: '/workspace/mysql.sock'  port: 3306  (Ubuntu).
+2025-08-22T10:12:55.247513Z 21 [Warning] [MY-010235] [Server] Following users were specified in CREATE USER IF NOT EXISTS but they already exist. Corresponding entry in binary log used default authentication plugin 'caching_sha2_password' to rewrite authentication information (if any) for them: 'app'@'%'
