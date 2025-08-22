@@ -39,10 +39,12 @@ public class BookingController {
 	public ResponseEntity<Map<String, Object>> verifyPayment(@RequestBody BookingDtos.VerifyPaymentRequest request) {
 		try {
 			Booking booking = bookingService.confirmPayment(request);
+			PNR pnr = pnrRepository.findByBooking_Id(booking.getId()).orElse(null);
 			Map<String, Object> response = new HashMap<>();
 			response.put("status", "PAYMENT_VERIFIED");
 			response.put("message", "Payment verified successfully");
 			response.put("bookingId", booking.getId());
+			if (pnr != null) response.put("pnrNumber", pnr.getPnrNumber());
 			return ResponseEntity.ok(response);
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
@@ -58,6 +60,7 @@ public class BookingController {
 							.collect(Collectors.toList());
 					String status = booking.getStatus().name();
 					if ("CANCELED".equals(status)) { status = "CANCELLED"; }
+					PNR pnr = pnrRepository.findByBooking_Id(booking.getId()).orElse(null);
 					Map<String, Object> response = new HashMap<>();
 					response.put("bookingId", booking.getId());
 					response.put("status", status);
@@ -68,6 +71,7 @@ public class BookingController {
 					response.put("seatLabels", seatLabels);
 					response.put("totalAmount", booking.getTotalAmount());
 					response.put("createdAt", booking.getCreatedAt());
+					if (pnr != null) response.put("pnrNumber", pnr.getPnrNumber());
 					return ResponseEntity.ok(response);
 				})
 				.orElse(ResponseEntity.notFound().build());
