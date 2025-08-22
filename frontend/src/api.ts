@@ -8,7 +8,7 @@ export async function apiGet<T>(path: string): Promise<T> {
 		const text = await res.text().catch(() => '');
 		throw new Error(`GET ${path} failed: ${res.status} ${text}`);
 	}
-	return res.json();
+	return res.json() as Promise<T>;
 }
 
 export async function apiPost<TReq, TRes>(path: string, body: TReq): Promise<TRes> {
@@ -22,7 +22,7 @@ export async function apiPost<TReq, TRes>(path: string, body: TReq): Promise<TRe
 		const text = await res.text().catch(() => '');
 		throw new Error(`POST ${path} failed: ${res.status} ${text}`);
 	}
-	return res.json();
+	return res.json() as Promise<TRes>;
 }
 
 export async function apiPut<TReq, TRes>(path: string, body: TReq): Promise<TRes> {
@@ -36,7 +36,7 @@ export async function apiPut<TReq, TRes>(path: string, body: TReq): Promise<TRes
         const text = await res.text().catch(() => '');
         throw new Error(`PUT ${path} failed: ${res.status} ${text}`);
     }
-    return res.json();
+    return res.json() as Promise<TRes>;
 }
 
 export async function apiDelete(path: string): Promise<void> {

@@ -12,7 +12,6 @@ import {
   MenuItem,
   Slider,
   Chip,
-  Grid,
   Paper,
   IconButton,
   Collapse,
@@ -31,6 +30,7 @@ import {
   ToggleButton,
   ToggleButtonGroup
 } from '@mui/material';
+import Grid from '@mui/material/GridLegacy';
 import {
   Search as SearchIcon,
   Clear as ClearIcon,
@@ -171,7 +171,7 @@ export default function InteractiveTrainSearch({
         {/* Main Search Form */}
         <Grid container spacing={3} sx={{ mb: 3 }}>
           {/* Source Station */}
-          <Grid item xs={12} md={4}>
+          <Grid xs={12} md={4}>
             <Autocomplete
               options={[]}
               freeSolo
@@ -206,7 +206,7 @@ export default function InteractiveTrainSearch({
           </Grid>
 
           {/* Swap Button */}
-          <Grid item xs={12} md={1} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Grid xs={12} md={1} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Tooltip title="Swap Stations">
               <IconButton
                 onClick={handleSwapStations}
@@ -224,7 +224,7 @@ export default function InteractiveTrainSearch({
           </Grid>
 
           {/* Destination Station */}
-          <Grid item xs={12} md={4}>
+          <Grid xs={12} md={4}>
             <Autocomplete
               options={[]}
               freeSolo
@@ -259,7 +259,7 @@ export default function InteractiveTrainSearch({
           </Grid>
 
           {/* Journey Date */}
-          <Grid item xs={12} md={3}>
+          <Grid xs={12} md={3}>
             <DatePicker
               label="Journey Date"
               value={localFilters.journeyDate ? dayjs(localFilters.journeyDate) : null}
@@ -341,7 +341,7 @@ export default function InteractiveTrainSearch({
         <Collapse in={showAdvanced}>
           <Slide direction="up" in={showAdvanced} timeout={400}>
             <Grid container spacing={3} sx={{ mb: 3 }}>
-              <Grid item xs={12} md={3}>
+              <Grid xs={12} md={3}>
                 <FormControl fullWidth>
                   <InputLabel>Train Type</InputLabel>
                   <Select
@@ -361,7 +361,7 @@ export default function InteractiveTrainSearch({
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} md={3}>
+              <Grid xs={12} md={3}>
                 <FormControl fullWidth>
                   <InputLabel>Train Category</InputLabel>
                   <Select
@@ -377,7 +377,7 @@ export default function InteractiveTrainSearch({
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} md={3}>
+              <Grid xs={12} md={3}>
                 <FormControl fullWidth>
                   <InputLabel>AC Availability</InputLabel>
                   <Select
@@ -392,7 +392,7 @@ export default function InteractiveTrainSearch({
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} md={3}>
+              <Grid xs={12} md={3}>
                 <FormControl fullWidth>
                   <InputLabel>Class Type</InputLabel>
                   <Select
@@ -425,7 +425,7 @@ export default function InteractiveTrainSearch({
               </Typography>
               
               <Grid container spacing={3}>
-                <Grid item xs={12} md={6}>
+                <Grid xs={12} md={6}>
                   <Typography gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
                     <SpeedIcon sx={{ mr: 1, color: 'info.main' }} />
                     Minimum Speed (km/h)
@@ -446,7 +446,7 @@ export default function InteractiveTrainSearch({
                   />
                 </Grid>
 
-                <Grid item xs={12} md={6}>
+                <Grid xs={12} md={6}>
                   <Typography gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
                     <MoneyIcon sx={{ mr: 1, color: 'success.main' }} />
                     Maximum Fare (₹)
@@ -467,7 +467,7 @@ export default function InteractiveTrainSearch({
                   />
                 </Grid>
 
-                <Grid item xs={12} md={6}>
+                <Grid xs={12} md={6}>
                   <FormControl fullWidth>
                     <InputLabel>Sort By</InputLabel>
                     <Select
@@ -483,7 +483,7 @@ export default function InteractiveTrainSearch({
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} md={6}>
+                <Grid xs={12} md={6}>
                   <FormControl fullWidth>
                     <InputLabel>Sort Order</InputLabel>
                     <Select

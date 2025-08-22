@@ -19,7 +19,8 @@ import {
   MenuItem,
   Badge,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  ListItemButton
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -99,9 +100,8 @@ export default function ProfessionalHeader({
       
       <List sx={{ pt: 1 }}>
         {menuItems.map((item) => (
-          <ListItem 
+          <ListItemButton 
             key={item.text} 
-            button 
             onClick={() => item.action ? item.action() : handleNavigation(item.path)}
             sx={{ 
               borderRadius: 1, 
@@ -117,7 +117,7 @@ export default function ProfessionalHeader({
               primary={item.text} 
               primaryTypographyProps={{ fontWeight: 500 }}
             />
-          </ListItem>
+          </ListItemButton>
         ))}
       </List>
       

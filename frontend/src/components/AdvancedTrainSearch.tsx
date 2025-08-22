@@ -18,12 +18,12 @@ import {
   Slider,
   FormControlLabel,
   Checkbox,
-  Grid,
   Autocomplete,
   Divider,
   IconButton,
   Tooltip
 } from '@mui/material';
+import Grid from '@mui/material/GridLegacy';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -67,7 +67,7 @@ export default function AdvancedTrainSearch({ onSearch, onClear, filters }: Adva
   const [stations, setStations] = useState<Station[]>([]);
   const [cities, setCities] = useState<string[]>([]);
   const [states, setStates] = useState<string[]>([]);
-  const [zones, setStates] = useState<string[]>([]);
+  const [zones, setZones] = useState<string[]>([]);
   const [trainTypes, setTrainTypes] = useState<string[]>([]);
   const [trainCategories, setTrainCategories] = useState<string[]>([]);
   const [trainOperators, setTrainOperators] = useState<string[]>([]);
@@ -82,8 +82,10 @@ export default function AdvancedTrainSearch({ onSearch, onClear, filters }: Adva
     try {
       setLoading(true);
       const [filtersData, stationsData] = await Promise.all([
-        apiGet('/api/train-search/filters'),
-        apiGet('/api/stations')
+        apiGet<{ trainTypes?: string[]; trainCategories?: string[]; trainOperators?: string[]; cities?: string[]; states?: string[]; zones?: string[] }>(
+          '/api/train-search/filters'
+        ),
+        apiGet<Station[]>('/api/stations')
       ]);
       
       setTrainTypes(filtersData.trainTypes || []);
@@ -92,6 +94,7 @@ export default function AdvancedTrainSearch({ onSearch, onClear, filters }: Adva
       setCities(filtersData.cities || []);
       setStates(filtersData.states || []);
       setStations(stationsData);
+      setZones(filtersData.zones || []);
     } catch (error) {
       console.error('Failed to load filters:', error);
     } finally {
@@ -131,7 +134,7 @@ export default function AdvancedTrainSearch({ onSearch, onClear, filters }: Adva
 
         {/* Basic Search */}
         <Grid container spacing={2} sx={{ mb: 2 }}>
-          <Grid item xs={12} md={3}>
+          <Grid xs={12} md={3}>
             <Autocomplete
               options={stations}
               getOptionLabel={(option) => `${option.name} (${option.code})`}
@@ -148,7 +151,7 @@ export default function AdvancedTrainSearch({ onSearch, onClear, filters }: Adva
             />
           </Grid>
           
-          <Grid item xs={12} md={3}>
+          <Grid xs={12} md={3}>
             <Autocomplete
               options={stations}
               getOptionLabel={(option) => `${option.name} (${option.code})`}
@@ -165,7 +168,7 @@ export default function AdvancedTrainSearch({ onSearch, onClear, filters }: Adva
             />
           </Grid>
           
-          <Grid item xs={12} md={3}>
+          <Grid xs={12} md={3}>
             <DatePicker
               label="Journey Date"
               value={filters.journeyDate ? dayjs(filters.journeyDate) : null}
@@ -174,7 +177,7 @@ export default function AdvancedTrainSearch({ onSearch, onClear, filters }: Adva
             />
           </Grid>
           
-          <Grid item xs={12} md={3}>
+          <Grid xs={12} md={3}>
             <FormControl fullWidth>
               <InputLabel>Class Type</InputLabel>
               <Select
@@ -228,7 +231,7 @@ export default function AdvancedTrainSearch({ onSearch, onClear, filters }: Adva
             <AccordionDetails>
               <Grid container spacing={3}>
                 {/* Train Type & Category */}
-                <Grid item xs={12} md={6}>
+                <Grid xs={12} md={6}>
                   <FormControl fullWidth>
                     <InputLabel>Train Type</InputLabel>
                     <Select
@@ -244,7 +247,7 @@ export default function AdvancedTrainSearch({ onSearch, onClear, filters }: Adva
                   </FormControl>
                 </Grid>
                 
-                <Grid item xs={12} md={6}>
+                <Grid xs={12} md={6}>
                   <FormControl fullWidth>
                     <InputLabel>Train Category</InputLabel>
                     <Select
@@ -261,7 +264,7 @@ export default function AdvancedTrainSearch({ onSearch, onClear, filters }: Adva
                 </Grid>
 
                 {/* AC & Operator */}
-                <Grid item xs={12} md={6}>
+                <Grid xs={12} md={6}>
                   <FormControl fullWidth>
                     <InputLabel>AC Availability</InputLabel>
                     <Select
@@ -276,7 +279,7 @@ export default function AdvancedTrainSearch({ onSearch, onClear, filters }: Adva
                   </FormControl>
                 </Grid>
                 
-                <Grid item xs={12} md={6}>
+                <Grid xs={12} md={6}>
                   <FormControl fullWidth>
                     <InputLabel>Train Operator</InputLabel>
                     <Select
@@ -293,7 +296,7 @@ export default function AdvancedTrainSearch({ onSearch, onClear, filters }: Adva
                 </Grid>
 
                 {/* Speed & Fare Range */}
-                <Grid item xs={12} md={6}>
+                <Grid xs={12} md={6}>
                   <Typography gutterBottom>Minimum Speed (km/h)</Typography>
                   <Slider
                     value={filters.minSpeed}
@@ -310,7 +313,7 @@ export default function AdvancedTrainSearch({ onSearch, onClear, filters }: Adva
                   />
                 </Grid>
                 
-                <Grid item xs={12} md={6}>
+                <Grid xs={12} md={6}>
                   <Typography gutterBottom>Maximum Fare (₹)</Typography>
                   <Slider
                     value={filters.maxFare}
@@ -328,7 +331,7 @@ export default function AdvancedTrainSearch({ onSearch, onClear, filters }: Adva
                 </Grid>
 
                 {/* Sorting Options */}
-                <Grid item xs={12} md={6}>
+                <Grid xs={12} md={6}>
                   <FormControl fullWidth>
                     <InputLabel>Sort By</InputLabel>
                     <Select
@@ -343,7 +346,7 @@ export default function AdvancedTrainSearch({ onSearch, onClear, filters }: Adva
                   </FormControl>
                 </Grid>
                 
-                <Grid item xs={12} md={6}>
+                <Grid xs={12} md={6}>
                   <FormControl fullWidth>
                     <InputLabel>Sort Order</InputLabel>
                     <Select

@@ -8,11 +8,11 @@ import {
   Box,
   Button,
   Divider,
-  Grid,
   Tooltip,
   IconButton,
   Collapse
 } from '@mui/material';
+import Grid from '@mui/material/GridLegacy';
 import {
   Train as TrainIcon,
   AccessTime as TimeIcon,
@@ -30,13 +30,13 @@ import { useState } from 'react';
 interface TrainInfo {
   id: number;
   name: string;
-  trainNumber: string;
-  source: string;
-  destination: string;
+  trainNumber?: string;
+  source?: string;
+  destination?: string;
   startTime: string;
   endTime: string;
   seatPrice: number;
-  classType: string;
+  classType?: string;
   trainType?: string;
   trainCategory?: string;
   platformNumber?: string;
@@ -158,7 +158,7 @@ export default function EnhancedTrainCard({ train, isSelected, onSelect, onViewD
 
         {/* Time and Duration */}
         <Grid container spacing={2} sx={{ mb: 2 }}>
-          <Grid item xs={4}>
+          <Grid xs={4}>
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="h6" fontWeight={600} color="primary">
                 {formatTime(train.startTime)}
@@ -172,7 +172,7 @@ export default function EnhancedTrainCard({ train, isSelected, onSelect, onViewD
             </Box>
           </Grid>
           
-          <Grid item xs={4}>
+          <Grid xs={4}>
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="body2" color="text.secondary">
                 {getJourneyDuration()}
@@ -184,7 +184,7 @@ export default function EnhancedTrainCard({ train, isSelected, onSelect, onViewD
             </Box>
           </Grid>
           
-          <Grid item xs={4}>
+          <Grid xs={4}>
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="h6" fontWeight={600} color="primary">
                 {formatTime(train.endTime)}
@@ -291,7 +291,7 @@ export default function EnhancedTrainCard({ train, isSelected, onSelect, onViewD
           
           <Grid container spacing={2}>
             {train.intermediateStations && (
-              <Grid item xs={12}>
+              <Grid xs={12}>
                 <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                   Intermediate Stations:
                 </Typography>
@@ -302,7 +302,7 @@ export default function EnhancedTrainCard({ train, isSelected, onSelect, onViewD
             )}
             
             {train.totalCoaches && (
-              <Grid item xs={6}>
+              <Grid xs={6}>
                 <Typography variant="subtitle2" color="text.secondary">
                   Total Coaches:
                 </Typography>
@@ -311,7 +311,7 @@ export default function EnhancedTrainCard({ train, isSelected, onSelect, onViewD
             )}
             
             {train.routeType && (
-              <Grid item xs={6}>
+              <Grid xs={6}>
                 <Typography variant="subtitle2" color="text.secondary">
                   Route Type:
                 </Typography>
@@ -320,7 +320,7 @@ export default function EnhancedTrainCard({ train, isSelected, onSelect, onViewD
             )}
             
             {train.trainOperator && (
-              <Grid item xs={6}>
+              <Grid xs={6}>
                 <Typography variant="subtitle2" color="text.secondary">
                   Operator:
                 </Typography>
