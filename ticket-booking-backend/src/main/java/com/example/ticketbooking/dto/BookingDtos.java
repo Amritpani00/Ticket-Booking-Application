@@ -76,7 +76,6 @@ public class BookingDtos {
 		@NotBlank
 		@Pattern(regexp = "(?i)MALE|FEMALE|OTHER", message = "gender must be MALE, FEMALE or OTHER")
 		private String gender;
-		@NotBlank
 		private String idProof;
 		@NotBlank
 		private String idProofType;

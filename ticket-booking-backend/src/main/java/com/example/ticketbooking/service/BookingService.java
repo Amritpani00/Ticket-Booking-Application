@@ -73,6 +73,10 @@ public class BookingService {
 		booking.setCustomerName(request.getCustomerName());
 		booking.setCustomerEmail(request.getCustomerEmail());
 		booking.setCustomerPhone(request.getCustomerPhone());
+		// Parse and set journey date from validated YYYY-MM-DD string
+		if (request.getJourneyDate() != null && !request.getJourneyDate().isBlank()) {
+			booking.setJourneyDate(java.time.LocalDate.parse(request.getJourneyDate()));
+		}
 		booking.setTotalAmount(total);
 		booking.setStatus(Booking.Status.PENDING_PAYMENT);
 		booking.setCreatedAt(OffsetDateTime.now());
@@ -94,9 +98,13 @@ public class BookingService {
 						.idProof(p.getIdProof())
 						.seat(seat)
 						.build();
-				// Will be cascaded if set; else repository needed
+				// Ensure cascading by attaching passenger to booking aggregate
+				booking.getPassengers().add(bp);
 			}
 		}
+
+		// Persist passengers before creating payment order so booking reflects full state
+		booking = bookingRepository.save(booking);
 
 		long amountInPaise = total.multiply(BigDecimal.valueOf(100)).longValue();
 		Order order = paymentService.createOrder(amountInPaise, "booking-" + booking.getId());
