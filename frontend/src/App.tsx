@@ -383,6 +383,7 @@ function App() {
 
   const handleAdvancedSearch = (filters: SearchFilters) => {
     setSearchFilters(filters);
+    setJourneyDate(filters.journeyDate);
     setSearchMode('advanced');
     setShowDashboard(false);
   };
@@ -503,6 +504,7 @@ function App() {
 
   async function createBooking() {
     if (!selectedEvent || selectedSeatIds.length === 0 || passengers.length === 0) return;
+    if (!journeyDate) { setToast('Please select a journey date'); return; }
     const err = validateCustomer();
     if (err) { setToast(err); return; }
     
@@ -516,6 +518,7 @@ function App() {
         customerName: customer.name || passengers[0].name,
         customerEmail: customer.email || passengers[0].email,
         customerPhone: customer.phone || passengers[0].contactNumber,
+        journeyDate: journeyDate,
         passengers: passengers.map(p => ({
           name: p.name,
           age: parseInt(p.age),

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Alert, Box, Button, Card, CardContent, Chip, Divider, Skeleton, Stack, Typography } from '@mui/material';
-import { apiGet } from '../api';
+import { apiGet, apiPost } from '../api';
 
 interface TicketDto {
   bookingId: number;
@@ -20,6 +20,8 @@ export default function Ticket() {
   const [ticket, setTicket] = useState<TicketDto | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [retrying, setRetrying] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -34,6 +36,50 @@ export default function Ticket() {
   if (loading) return <Skeleton variant="rounded" height={160} />;
   if (error) return <Alert severity="error">{error}</Alert>;
   if (!ticket) return null;
+
+  async function handleRetryPayment() {
+    if (!ticket || ticket.status !== 'PENDING_PAYMENT') return;
+    setRetrying(true);
+    try {
+      const data = await apiPost<undefined, any>(`/api/payments/retry/${ticket.bookingId}`, undefined as any);
+      const devMode = !(window as any).Razorpay;
+      if (devMode) {
+        await apiPost(`/api/bookings/verify`, { bookingId: ticket.bookingId, razorpayOrderId: data.orderId, razorpayPaymentId: 'pay_test_retry', razorpaySignature: 'sig_test_retry' } as any);
+        setToast('Payment verified. Ticket confirmed.');
+        setTicket({ ...ticket, status: 'CONFIRMED' });
+        return;
+      }
+      if (!(window as any).Razorpay) {
+        await new Promise<void>((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error('Failed to load Razorpay'));
+          document.body.appendChild(script);
+        });
+      }
+      const options: any = {
+        key: data.razorpayKeyId,
+        amount: Math.round(data.amount * 100),
+        currency: data.currency,
+        name: 'IRCTC Pro - Train Ticket Booking',
+        description: `Booking #${ticket.bookingId}`,
+        order_id: data.orderId,
+        handler: async (response: any) => {
+          await apiPost(`/api/bookings/verify`, { bookingId: ticket.bookingId, razorpayOrderId: response.razorpay_order_id, razorpayPaymentId: response.razorpay_payment_id, razorpaySignature: response.razorpay_signature } as any);
+          setToast('Payment verified. Ticket confirmed.');
+          setTicket({ ...ticket, status: 'CONFIRMED' });
+        },
+        modal: { ondismiss: () => setToast('Payment dismissed') },
+      };
+      const rz = new (window as any).Razorpay(options);
+      rz.open();
+    } catch (e: any) {
+      setToast(e.message || 'Payment retry failed');
+    } finally {
+      setRetrying(false);
+    }
+  }
 
   function downloadPdf() {
     const w = window.open('', '_blank');
@@ -98,8 +144,14 @@ export default function Ticket() {
             <Typography variant="body2" fontWeight={700}>Total Paid: ₹{ticket.totalAmount.toFixed(2)}</Typography>
           </Stack>
           <Stack direction="row" justifyContent="flex-end" sx={{ mt: 1 }}>
+            {ticket.status === 'PENDING_PAYMENT' && (
+              <Button variant="contained" color="warning" onClick={handleRetryPayment} disabled={retrying} sx={{ mr: 1 }}>
+                {retrying ? 'Retrying...' : 'Retry Payment'}
+              </Button>
+            )}
             <Button variant="outlined" onClick={downloadPdf}>Download PDF</Button>
           </Stack>
+          {toast && <Alert severity="info" sx={{ mt: 1 }}>{toast}</Alert>}
         </CardContent>
       </Card>
     </Box>

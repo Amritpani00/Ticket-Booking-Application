@@ -34,6 +34,7 @@ const router = createBrowserRouter([
           { path: 'ticket/:id', element: <Ticket /> },
           { path: 'profile', element: <Profile /> },
           { path: 'admin', element: <Admin /> },
+          { path: 'booking', element: <App /> },
         ],
       },
     ],
