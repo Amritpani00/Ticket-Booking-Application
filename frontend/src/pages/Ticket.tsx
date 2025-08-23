@@ -13,6 +13,7 @@ interface TicketDto {
   seatLabels: string[];
   totalAmount: number;
   createdAt: string;
+  pnrNumber?: string;
 }
 
 export default function Ticket() {
@@ -139,7 +140,7 @@ export default function Ticket() {
           </Stack>
           <Divider sx={{ my: 1 }} />
           <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" spacing={1} alignItems={{ xs: 'flex-start', sm: 'center' }}>
-            <Typography variant="body2" color="text.secondary">PNR/Booking ID: {ticket.bookingId}</Typography>
+            <Typography variant="body2" color="text.secondary">PNR/Booking ID: {ticket.pnrNumber || ticket.bookingId}</Typography>
             <Typography variant="body2" color="text.secondary">Booked at: {new Date(ticket.createdAt).toLocaleString()}</Typography>
             <Typography variant="body2" fontWeight={700}>Total Paid: ₹{ticket.totalAmount.toFixed(2)}</Typography>
           </Stack>

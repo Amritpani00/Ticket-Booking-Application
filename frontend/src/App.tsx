@@ -270,7 +270,8 @@ function App() {
         const params = new URLSearchParams();
         Object.entries(searchFilters).forEach(([key, value]) => {
           if (value !== '' && value !== null && value !== undefined) {
-            params.set(key, value.toString());
+            const k = key === 'journeyDate' ? 'date' : key;
+            params.set(k, value.toString());
           }
         });
         const qs = params.toString();
