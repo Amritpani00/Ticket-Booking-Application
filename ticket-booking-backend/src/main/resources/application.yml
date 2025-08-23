@@ -24,3 +24,4 @@ app:
       key-secret: ${RAZORPAY_KEY_SECRET:secret}
       currency: INR
       enabled: ${RAZORPAY_ENABLED:false}
+      webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:}
