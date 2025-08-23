@@ -47,7 +47,33 @@ public class PaymentController {
 
 	@PostMapping("/webhook/razorpay")
 	public ResponseEntity<?> webhook(@RequestBody Map<String, Object> payload, @RequestHeader Map<String, String> headers) {
-		// Placeholder for verifying webhook signature and updating booking status
-		return ResponseEntity.ok(Map.of("received", true));
+		try {
+			String signature = headers.getOrDefault("x-razorpay-signature", headers.getOrDefault("X-Razorpay-Signature", ""));
+			String body = new org.json.JSONObject(payload).toString();
+			boolean ok = paymentService.verifyWebhookSignature(body, signature);
+			if (!ok) {
+				return ResponseEntity.status(401).body(Map.of("error", "INVALID_SIGNATURE"));
+			}
+			Map<String, Object> payloadData = (Map<String, Object>) payload.get("payload");
+			if (payloadData == null) return ResponseEntity.badRequest().body(Map.of("error", "INVALID_PAYLOAD"));
+			Map<String, Object> paymentEntity = (Map<String, Object>) payloadData.get("payment");
+			if (paymentEntity == null) return ResponseEntity.badRequest().body(Map.of("error", "INVALID_PAYLOAD"));
+			Map<String, Object> payment = (Map<String, Object>) paymentEntity.get("entity");
+			if (payment == null) return ResponseEntity.badRequest().body(Map.of("error", "INVALID_PAYLOAD"));
+			String orderId = (String) payment.get("order_id");
+			String paymentId = (String) payment.get("id");
+			if (orderId == null || paymentId == null) return ResponseEntity.badRequest().body(Map.of("error", "MISSING_IDS"));
+
+			return bookingRepository.findByPaymentOrderId(orderId)
+					.map(b -> {
+						b.setRazorpayPaymentId(paymentId);
+						b.setStatus(com.example.ticketbooking.model.Booking.Status.CONFIRMED);
+						bookingRepository.save(b);
+						return ResponseEntity.ok(Map.of("status", "BOOKING_CONFIRMED", "bookingId", b.getId()));
+					})
+					.orElse(ResponseEntity.notFound().build());
+		} catch (Exception e) {
+			return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
+		}
 	}
 }

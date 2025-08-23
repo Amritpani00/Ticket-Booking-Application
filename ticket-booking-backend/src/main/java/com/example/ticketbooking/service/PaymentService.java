@@ -27,6 +27,9 @@ public class PaymentService {
     @Value("${app.payment.razorpay.enabled:false}")
     private boolean enabled;
 
+    @Value("${app.payment.razorpay.webhook-secret:}")
+    private String webhookSecret;
+
     private RazorpayClient ensureClient() throws Exception {
         return new RazorpayClient(keyId, keySecret);
     }
@@ -66,5 +69,22 @@ public class PaymentService {
 
     public String getKeyId() {
         return keyId;
+    }
+
+    public boolean verifyWebhookSignature(String payload, String signature) throws Exception {
+        if (!enabled) {
+            return true;
+        }
+        if (webhookSecret == null || webhookSecret.isBlank()) {
+            return false;
+        }
+        Mac mac = Mac.getInstance("HmacSHA256");
+        SecretKeySpec secretKey = new SecretKeySpec(webhookSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+        mac.init(secretKey);
+        byte[] hmac = mac.doFinal(payload.getBytes(StandardCharsets.UTF_8));
+        StringBuilder sb = new StringBuilder();
+        for (byte b : hmac) { sb.append(String.format("%02x", b)); }
+        String expected = sb.toString();
+        return expected.equals(signature);
     }
 }
