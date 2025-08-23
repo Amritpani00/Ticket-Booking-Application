@@ -16,7 +16,10 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper
+  Paper,
+  Radio,
+  RadioGroup,
+  FormControlLabel
 } from '@mui/material';
 import Grid from '@mui/material/GridLegacy';
 import {
@@ -93,6 +96,21 @@ export default function BookingSummary({
   const [fareBreakdown, setFareBreakdown] = useState<FareBreakdown | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<'razorpay'>('razorpay');
+  const [scriptReady, setScriptReady] = useState<boolean>(Boolean((window as any).Razorpay));
+
+  useEffect(() => {
+    if (!(window as any).Razorpay) {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.async = true;
+      script.onload = () => setScriptReady(true);
+      script.onerror = () => setError('Failed to load payment SDK. Please retry.');
+      document.body.appendChild(script);
+    } else {
+      setScriptReady(true);
+    }
+  }, []);
 
   useEffect(() => {
     if (selectedSeats.length > 0 && passengers.length > 0) {
@@ -415,28 +433,43 @@ export default function BookingSummary({
           </Card>
         )}
 
-        {/* Action Buttons */}
-        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
-          <Button
-            variant="contained"
-            size="large"
-            onClick={onProceedToPayment}
-            disabled={!fareBreakdown || passengers.length === 0}
-            sx={{ minWidth: 200 }}
-          >
-            Proceed to Payment
-          </Button>
-          
-          <Button
-            variant="outlined"
-            size="large"
-            onClick={onAddToWaitlist}
-            sx={{ minWidth: 200 }}
-          >
-            Add to Waitlist
-          </Button>
-        </Box>
-
+        {/* Payment Section */}
+        <Card variant="outlined" sx={{ mb: 3 }}>
+          <CardContent>
+            <Typography variant="h6" fontWeight={600} gutterBottom>
+              <PaymentIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+              Payment
+            </Typography>
+            <Stack spacing={2}>
+              <RadioGroup
+                row
+                value={paymentMethod}
+                onChange={(e) => setPaymentMethod(e.target.value as 'razorpay')}
+              >
+                <FormControlLabel value="razorpay" control={<Radio />} label="Razorpay (UPI / Card / NetBanking)" />
+                {/* Future methods can be enabled here */}
+              </RadioGroup>
+              {!scriptReady && (
+                <Alert severity="info">Loading payment SDK…</Alert>
+              )}
+              {fareBreakdown && (
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
+                  <Typography variant="subtitle1" fontWeight={600}>Payable Now</Typography>
+                  <Typography variant="h6" fontWeight={800}>₹{fareBreakdown.totalFare.toFixed(2)}</Typography>
+                </Box>
+              )}
+              <Button
+                variant="contained"
+                size="large"
+                onClick={onProceedToPayment}
+                disabled={!fareBreakdown || passengers.length === 0}
+                sx={{ minWidth: 200, alignSelf: 'center' }}
+              >
+                Pay Now
+              </Button>
+            </Stack>
+          </CardContent>
+        </Card>
         {/* Important Notes */}
         <Box sx={{ mt: 3, p: 2, bgcolor: 'warning.light', borderRadius: 1 }}>
           <Typography variant="subtitle2" fontWeight={600} gutterBottom>
