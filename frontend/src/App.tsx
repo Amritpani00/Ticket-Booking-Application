@@ -689,11 +689,18 @@ function App() {
 
                 {/* Passenger Details Form */}
                 {showPassengerForm && selectedEvent && (
-                  <PassengerDetailsForm
-                    numberOfSeats={selectedSeatIds.length}
-                    onPassengersChange={handlePassengersChange}
-                    passengers={passengers}
-                  />
+                  <>
+                    <PassengerDetailsForm
+                      numberOfSeats={selectedSeatIds.length}
+                      onPassengersChange={handlePassengersChange}
+                      passengers={passengers}
+                    />
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                      <Button variant="contained" size="large" onClick={handleProceedToBookingSummary} disabled={passengers.length !== selectedSeatIds.length}>
+                        Continue to Booking Summary
+                      </Button>
+                    </Box>
+                  </>
                 )}
 
                 {/* Booking Summary */}
